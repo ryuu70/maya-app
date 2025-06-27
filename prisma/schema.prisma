@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  birthday  DateTime
+  createdAt DateTime @default(now())
+  passwordHash String
+  // 👇 追加プロパティ
+  role         Role         @default(USER)    // 管理者かどうか
+  isPaid       Boolean      @default(false)   // 課金しているか
+  renewalStatus RenewalStatus @default(NONE)  // 継続申請の状態
+}
+
+// 管理者 / 通常ユーザー
+enum Role {
+  USER
+  ADMIN
+}
+
+// 継続申請ステータス
+enum RenewalStatus {
+  NONE         // 申請なし
+  REQUESTED    // 継続申請中
+  APPROVED     // 継続申請許可済み
+}
