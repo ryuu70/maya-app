@@ -1,15 +1,17 @@
-'use clinet'
-
 import Link from 'next/link'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/lib/authOptions'
+import LogoutButton from './LogoutButton'
+export default async function Header() {
+    const session = await getServerSession(authOptions)
 
-export default function Header() {
     return (
         <header className="bg-blue-700 text-white px-6 py-4 shadow">
             <div className="max-w-5xl mx-auto flex justify-between items-center">
                 <Link href="/" className="text-2xl font-bold tracking-wide">
                     🌟 マヤ占い
                 </Link>
-                <nav className="space-x-4 text-sm">
+                <nav className="space-x-4 text-sm flex items-center">
                     <Link href="/fortune" className="hover:underline">
                         運勢鑑定
                     </Link>
@@ -28,9 +30,16 @@ export default function Header() {
                     <Link href="/tarot" className="hover:underline">
                         タロット
                     </Link>
-                    <Link href="/login" className="hover:underline">
-                        ログイン
-                    </Link>
+                    {session ? (
+                        <>
+                        <span className="ml-4">ようこそ {session.user?.name} さん</span>
+                        <LogoutButton />
+                        </>
+                    ) : (
+                        <Link href="/login" className="hover:underline">
+                            ログイン
+                        </Link>
+                    )}
                 </nav>
             </div>
         </header>

@@ -13,7 +13,8 @@ export default function RegisterPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-
+        alert('/api/registerへ');
+        console.log("/api/registerへ");
         const res = await fetch('/api/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -21,6 +22,7 @@ export default function RegisterPage() {
         })
 
         const data = await res.json()
+        console.log(data);
         setMessage(data.success ? '登録が完了しました！' : `エラー: ${data.error}`)
     }
 
