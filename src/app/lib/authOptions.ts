@@ -9,6 +9,24 @@ export const authOptions: AuthOptions = {
     session: {
         strategy: 'jwt',
     },
+    callbacks: {
+        async jwt({ token, user }) {
+            // ログイン時に user の role を token に保存
+            if (user) {
+                token.role = (user as any).role
+                token.birthday= (user as any).birthday
+            }
+            return token
+        },
+        async session({ session, token }) {
+            // セッションに role を追加
+            if (session.user) {
+                session.user.role = token.role as string
+                session.user.birthday = token.birthday as string
+            }
+            return session
+        },
+    },
     providers: [
         CredentialsProvider({
             name: 'credentials',
@@ -33,6 +51,7 @@ export const authOptions: AuthOptions = {
                     email: user.email,
                     name: user.name,
                     role: user.role,
+                    birthday: user.birthday
                 }
             },
         }),

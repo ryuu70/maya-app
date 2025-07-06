@@ -7,3 +7,13 @@ const nextConfig = {
 }
 
 module.exports = nextConfig
+
+module.exports = {
+  webpack(config:any) {
+    config.module.rules.push({
+      test: /\.json$/,
+      type: 'json'
+    });
+    return config;
+  }
+}
