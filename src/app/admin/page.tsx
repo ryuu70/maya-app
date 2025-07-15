@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/lib/authOptions'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/app/lib/prisma'
+import type { User } from '@prisma/client'
 
 export default async function AdminPage() {
     const session = await getServerSession(authOptions)
@@ -41,7 +42,7 @@ export default async function AdminPage() {
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map((u:any) => (
+                    {users.map((u: User) => (
                         <tr key={u.id} className="odd:bg-white even:bg-gray-50">
                             <td className="border px-2 py-1 text-black">{u.name}</td>
                             <td className="border px-2 py-1 text-black">{u.email}</td>

@@ -2,11 +2,10 @@
 import Image from "next/image"
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/lib/authOptions'
-import dynamic from 'next/dynamic'
 
 import Fortune from '@/app/components/fortune'
 
-export default async function Home({ searchParams }: { searchParams?: { age?: string } }) {
+export default async function Home() {
   const session = await getServerSession(authOptions)
 
   if (!session?.user?.birthday || !session.user.name) return null

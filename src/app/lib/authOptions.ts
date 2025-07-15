@@ -1,24 +1,27 @@
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { prisma } from './prisma'
-import { AuthOptions } from 'next-auth'
+import type { Session, User as NextAuthUser } from 'next-auth'
+import type { JWT } from 'next-auth/jwt'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcrypt'
+import type { User } from '@prisma/client'
 
-export const authOptions: AuthOptions = {
+export const authOptions = {
     adapter: PrismaAdapter(prisma),
     session: {
         strategy: 'jwt',
     },
     callbacks: {
-        async jwt({ token, user }) {
+        async jwt({ token, user }: { token: JWT; user?: NextAuthUser | User }) {
             // ログイン時に user の role を token に保存
             if (user) {
-                token.role = (user as any).role
-                token.birthday= (user as any).birthday
+                token.role = (user as User).role
+                const birthday = (user as User).birthday
+                token.birthday = birthday instanceof Date ? birthday.toISOString() : String(birthday)
             }
             return token
         },
-        async session({ session, token }) {
+        async session({ session, token }: { session: Session; token: JWT }) {
             // セッションに role を追加
             if (session.user) {
                 session.user.role = token.role as string
