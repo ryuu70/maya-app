@@ -87,20 +87,16 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
         )
     }
 
-    const { 
-        kin, 
-        wave, 
-        mirror, 
-        opposite, 
+        const {
+        kin,
+        wave,
+        mirror,
+        opposite,
         ekiDetail, 
         ekiDiscDetail, 
         waveDetail,
         mirrorDetail,
-        mirrorEkiDiscDetail,
-        mirrorWaveDetail,
-        oppositeDetail,
-        oppositeEkiDiscDetail,
-        oppositeWaveDetail
+        oppositeDetail
     } = fortuneData
 
     const handleKinClick = () => {

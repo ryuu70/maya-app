@@ -16,7 +16,6 @@ export default function TarotPage() {
     const [selectedCard, setSelectedCard] = useState<TarotCard | null>(null)
     const [showDetail, setShowDetail] = useState(false)
     const [isShuffling, setIsShuffling] = useState(false)
-    const [backImageLoaded, setBackImageLoaded] = useState(false)
     const [backImageError, setBackImageError] = useState(false)
 
     // タロットカードの初期化
@@ -167,7 +166,6 @@ export default function TarotPage() {
                                             unoptimized={true}
                                             onLoad={() => {
                                                 console.log('カード裏面画像が正常に読み込まれました')
-                                                setBackImageLoaded(true)
                                             }}
                                             onError={(e) => {
                                                 console.error('カード裏面画像の読み込みエラー:', e)
