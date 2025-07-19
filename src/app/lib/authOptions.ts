@@ -9,7 +9,7 @@ import type { User } from '@prisma/client'
 export const authOptions = {
     adapter: PrismaAdapter(prisma),
     session: {
-        strategy: 'jwt',
+        strategy: 'jwt' as const,
     },
     callbacks: {
         async jwt({ token, user }: { token: JWT; user?: NextAuthUser | User }) {

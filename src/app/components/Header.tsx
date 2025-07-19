@@ -1,9 +1,9 @@
 import Link from 'next/link'
-import { getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/app/lib/authOptions'
 import LogoutButton from './LogoutButton'
 export default async function Header() {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions as any) as any
 
     return (
         <header className="fixed top-0 w-full z-50 bg-purple-900/70 backdrop-blur-md text-white px-6 py-4 shadow">

@@ -2,10 +2,9 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/app/lib/authOptions'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/app/lib/prisma'
-import type { User } from '@prisma/client'
 
 export default async function AdminPage() {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions as any) as any
 
     // 管理者以外はトップページへリダイレクト
     if (!session || session.user?.role !== 'ADMIN') {
@@ -42,7 +41,7 @@ export default async function AdminPage() {
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map((u: User) => (
+                    {users.map((u: any) => (
                         <tr key={u.id} className="odd:bg-white even:bg-gray-50">
                             <td className="border px-2 py-1 text-black">{u.name}</td>
                             <td className="border px-2 py-1 text-black">{u.email}</td>

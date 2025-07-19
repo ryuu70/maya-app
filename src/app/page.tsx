@@ -1,12 +1,12 @@
 // app/page.tsx
 import Image from "next/image"
-import { getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/app/lib/authOptions'
 
 import Fortune from '@/app/components/fortune'
 
 export default async function Home() {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions as any) as any
 
   if (!session?.user?.birthday || !session.user.name) return null
 
