@@ -37,7 +37,7 @@ export default function RegisterPage() {
             } else {
                 setMessage(`エラー: ${data.error}`)
             }
-        } catch (error) {
+        } catch {
             setMessage('登録中にエラーが発生しました。もう一度お試しください。')
         }
         
