@@ -33,35 +33,54 @@ export default function Header() {
     return (
         <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${
             isScrolled 
-                ? 'bg-purple-900/90 backdrop-blur-md shadow-lg' 
-                : 'bg-purple-900/70 backdrop-blur-md'
+                ? 'bg-purple-900/95 backdrop-blur-md shadow-xl border-b border-purple-700/30' 
+                : 'bg-purple-900/85 backdrop-blur-md'
         }`}>
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4">
+            <div className="max-w-7xl mx-auto px-6 py-5">
                 <div className="flex justify-between items-center">
                     {/* ロゴ */}
-                    <Link href="/" className="text-xl sm:text-2xl font-bold tracking-wide text-white hover:text-purple-200 transition-colors">
-                        🌟 マヤ占い
+                    <Link href="/" className="flex items-center space-x-3 text-2xl font-bold tracking-wide text-white hover:text-purple-200 transition-colors group">
+                        <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-blue-500 rounded-lg flex items-center justify-center shadow-lg group-hover:shadow-purple-500/25 transition-all duration-300">
+                            <span className="text-xl">🌟</span>
+                        </div>
+                        <span className="hidden sm:block">マヤ占い</span>
                     </Link>
 
                     {/* デスクトップナビゲーション */}
-                    <nav className="hidden lg:flex space-x-6 text-sm items-center">
-                        <Link href="/fortune" className="text-white hover:text-purple-200 transition-colors">運勢鑑定</Link>
-                        <Link href="/compatibility" className="text-white hover:text-purple-200 transition-colors">相性鑑定</Link>
-                        <Link href="/group_compatibility" className="text-white hover:text-purple-200 transition-colors">グループ相性鑑定</Link>
-                        <Link href="/timeline" className="text-white hover:text-purple-200 transition-colors">KIN年表作成</Link>
-                        <Link href="/takuzitsu" className="text-white hover:text-purple-200 transition-colors">択日</Link>
-                        <Link href="/tarot" className="text-white hover:text-purple-200 transition-colors">タロット</Link>
-                        {(session?.user as any)?.role === 'ADMIN' && (
-                            <Link href="/admin" className="text-yellow-300 hover:text-yellow-200 transition-colors">管理者メニュー</Link>
-                        )}
-                        {session ? (
-                            <>
-                                <span className="text-white">ようこそ {session.user?.name} さん</span>
-                                <LogoutButton />
-                            </>
-                        ) : (
-                            <Link href="/login" className="text-white hover:text-purple-200 transition-colors">ログイン</Link>
-                        )}
+                    <nav className="hidden lg:flex items-center space-x-1">
+                        <div className="flex space-x-1">
+                            <Link href="/fortune" className="px-4 py-2 text-white hover:text-purple-200 hover:bg-white/10 rounded-lg transition-all duration-200 font-medium">運勢鑑定</Link>
+                            <Link href="/compatibility" className="px-4 py-2 text-white hover:text-purple-200 hover:bg-white/10 rounded-lg transition-all duration-200 font-medium">相性鑑定</Link>
+                            <Link href="/group_compatibility" className="px-4 py-2 text-white hover:text-purple-200 hover:bg-white/10 rounded-lg transition-all duration-200 font-medium">グループ相性</Link>
+                            <Link href="/timeline" className="px-4 py-2 text-white hover:text-purple-200 hover:bg-white/10 rounded-lg transition-all duration-200 font-medium">KIN年表</Link>
+                            <Link href="/takuzitsu" className="px-4 py-2 text-white hover:text-purple-200 hover:bg-white/10 rounded-lg transition-all duration-200 font-medium">択日</Link>
+                            <Link href="/tarot" className="px-4 py-2 text-white hover:text-purple-200 hover:bg-white/10 rounded-lg transition-all duration-200 font-medium">タロット</Link>
+                        </div>
+                        
+                        <div className="flex items-center space-x-4 ml-6 pl-6 border-l border-white/20">
+                            {(session?.user as any)?.role === 'ADMIN' && (
+                                <Link href="/admin" className="px-3 py-2 text-yellow-300 hover:text-yellow-200 hover:bg-yellow-500/10 rounded-lg transition-all duration-200 font-medium text-sm">
+                                    👑 管理
+                                </Link>
+                            )}
+                            {session ? (
+                                <div className="flex items-center space-x-3">
+                                    <div className="flex items-center space-x-2">
+                                        <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full flex items-center justify-center">
+                                            <span className="text-white text-sm font-semibold">
+                                                {session.user?.name?.charAt(0)}
+                                            </span>
+                                        </div>
+                                        <span className="text-white text-sm font-medium">ようこそ {session.user?.name} さん</span>
+                                    </div>
+                                    <LogoutButton />
+                                </div>
+                            ) : (
+                                <Link href="/login" className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all duration-200 font-medium">
+                                    ログイン
+                                </Link>
+                            )}
+                        </div>
                     </nav>
 
                     {/* ハンバーガーメニューボタン */}

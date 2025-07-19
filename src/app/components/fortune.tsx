@@ -8,7 +8,7 @@ import {
     getMirrorKin,
     getOppositeKin,
 } from '@/app/lib/kin'
-import { getEkiDetail, getEkiDiscDetail } from '@/app/lib/eki'
+import { getEkiDetail, getEkiDiscDetail, getWaveDetail } from '@/app/lib/eki'
 
 function formatJapaneseDate(dateStr: string): string {
     const date = new Date(dateStr)
@@ -26,6 +26,9 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
     const [age, setAge] = useState<number>(Number(searchParams.get('age') ?? 0))
     const [showDetail, setShowDetail] = useState(false)
     const [showEkiDetail, setShowEkiDetail] = useState(false)
+    const [showWaveDetail, setShowWaveDetail] = useState(false)
+    const [showMirrorDetail, setShowMirrorDetail] = useState(false)
+    const [showOppositeDetail, setShowOppositeDetail] = useState(false)
 
     // メモ化してパフォーマンスを向上
     const fortuneData = useMemo(() => {
@@ -41,6 +44,13 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
         const opposite = getOppositeKin(kin)
         const ekiDetail = getEkiDetail(kin)
         const ekiDiscDetail = getEkiDiscDetail(kin)
+        const waveDetail = getWaveDetail(wave)
+        const mirrorDetail = getEkiDetail(mirror)
+        const mirrorEkiDiscDetail = getEkiDiscDetail(mirror)
+        const mirrorWaveDetail = getWaveDetail(getWaveNumber(mirror))
+        const oppositeDetail = getEkiDetail(opposite)
+        const oppositeEkiDiscDetail = getEkiDiscDetail(opposite)
+        const oppositeWaveDetail = getWaveDetail(getWaveNumber(opposite))
 
         return {
             kin,
@@ -49,6 +59,13 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
             opposite,
             ekiDetail,
             ekiDiscDetail,
+            waveDetail,
+            mirrorDetail,
+            mirrorEkiDiscDetail,
+            mirrorWaveDetail,
+            oppositeDetail,
+            oppositeEkiDiscDetail,
+            oppositeWaveDetail,
             targetDate
         }
     }, [birthday, age])
@@ -70,7 +87,21 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
         )
     }
 
-    const { kin, wave, mirror, opposite, ekiDetail, ekiDiscDetail } = fortuneData
+    const { 
+        kin, 
+        wave, 
+        mirror, 
+        opposite, 
+        ekiDetail, 
+        ekiDiscDetail, 
+        waveDetail,
+        mirrorDetail,
+        mirrorEkiDiscDetail,
+        mirrorWaveDetail,
+        oppositeDetail,
+        oppositeEkiDiscDetail,
+        oppositeWaveDetail
+    } = fortuneData
 
     const handleKinClick = () => {
         setShowDetail(true)
@@ -94,6 +125,39 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
         }, 100)
     }
 
+    const handleWaveClick = () => {
+        setShowWaveDetail(true)
+        // モーダル表示後に自動スクロール
+        setTimeout(() => {
+            const modal = document.querySelector('[data-modal="wave-detail"]')
+            if (modal) {
+                modal.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }
+        }, 100)
+    }
+
+    const handleMirrorClick = () => {
+        setShowMirrorDetail(true)
+        // モーダル表示後に自動スクロール
+        setTimeout(() => {
+            const modal = document.querySelector('[data-modal="mirror-detail"]')
+            if (modal) {
+                modal.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }
+        }, 100)
+    }
+
+    const handleOppositeClick = () => {
+        setShowOppositeDetail(true)
+        // モーダル表示後に自動スクロール
+        setTimeout(() => {
+            const modal = document.querySelector('[data-modal="opposite-detail"]')
+            if (modal) {
+                modal.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }
+        }, 100)
+    }
+
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newAge = Number(e.target.value)
         setAge(newAge)
@@ -101,7 +165,7 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
     }
 
     return (
-        <div className="max-w-3xl mx-auto px-6 py-8">
+        <div className="max-w-3xl mx-auto px-6 py-8 pt-32">
             <div className="bg-white rounded-2xl shadow-lg p-6">
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">{name}さんの暦解き</h2>
                 <p className="text-gray-600 mb-4">
@@ -139,18 +203,36 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
                         <span className="text-xl font-bold text-red-600">{kin}</span>
                         <span className="block text-xs text-blue-600 mt-1">タップして詳細表示</span>
                     </button>
-                    <div className="bg-blue-50 p-3 rounded shadow">
+                    <button
+                        className="bg-blue-50 p-3 rounded shadow cursor-pointer hover:bg-blue-100 active:bg-blue-200 active:scale-95 transition-all duration-150 text-center touch-manipulation relative overflow-hidden group"
+                        onClick={handleWaveClick}
+                        aria-label={`マヤ暦波動数 ${wave} の詳細情報を表示`}
+                    >
+                        <div className="absolute inset-0 bg-blue-300 opacity-0 group-active:opacity-20 transition-opacity duration-150"></div>
                         <span className="block text-xs text-gray-500">マヤ暦波動数</span>
                         <span className="text-xl font-bold text-blue-600">{wave}</span>
-                    </div>
-                    <div className="bg-blue-50 p-3 rounded shadow">
+                        <span className="block text-xs text-blue-600 mt-1">タップして詳細表示</span>
+                    </button>
+                    <button
+                        className="bg-blue-50 p-3 rounded shadow cursor-pointer hover:bg-blue-100 active:bg-blue-200 active:scale-95 transition-all duration-150 text-center touch-manipulation relative overflow-hidden group"
+                        onClick={handleMirrorClick}
+                        aria-label={`鏡の向こうKIN ${mirror} の詳細情報を表示`}
+                    >
+                        <div className="absolute inset-0 bg-blue-300 opacity-0 group-active:opacity-20 transition-opacity duration-150"></div>
                         <span className="block text-xs text-gray-500">鏡の向こうKIN</span>
-                        <span className="text-lg font-bold">{mirror}</span>
-                    </div>
-                    <div className="bg-blue-50 p-3 rounded shadow">
+                        <span className="text-xl font-bold text-blue-600">{mirror}</span>
+                        <span className="block text-xs text-blue-600 mt-1">タップして詳細表示</span>
+                    </button>
+                    <button
+                        className="bg-blue-50 p-3 rounded shadow cursor-pointer hover:bg-blue-100 active:bg-blue-200 active:scale-95 transition-all duration-150 text-center touch-manipulation relative overflow-hidden group"
+                        onClick={handleOppositeClick}
+                        aria-label={`絶対反対KIN ${opposite} の詳細情報を表示`}
+                    >
+                        <div className="absolute inset-0 bg-blue-300 opacity-0 group-active:opacity-20 transition-opacity duration-150"></div>
                         <span className="block text-xs text-gray-500">絶対反対KIN</span>
-                        <span className="text-lg font-bold">{opposite}</span>
-                    </div>
+                        <span className="text-xl font-bold text-blue-600">{opposite}</span>
+                        <span className="block text-xs text-blue-600 mt-1">タップして詳細表示</span>
+                    </button>
                     <button
                         className="bg-green-50 p-3 rounded shadow col-span-1 sm:col-span-2 cursor-pointer hover:bg-green-100 active:bg-green-200 active:scale-95 transition-all duration-150 text-center touch-manipulation relative overflow-hidden group"
                         onClick={handleEkiClick}
@@ -240,6 +322,120 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
                                 {ekiDiscDetail.易の説明 || '情報なし'}
                             </p>
                         </div>
+                    </div>
+                </div>
+            )}
+            
+            {showWaveDetail && waveDetail && (
+                <div 
+                    data-modal="wave-detail"
+                    className="mt-8 bg-white rounded-2xl shadow-lg border border-gray-200 p-6 transition-all"
+                >
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-2xl font-bold text-gray-800">
+                            マヤ暦波動数 {wave} の詳細情報
+                        </h3>
+                        <button
+                            onClick={() => setShowWaveDetail(false)}
+                            className="text-gray-500 hover:text-gray-700 text-lg"
+                            aria-label="マヤ暦波動数の詳細情報を閉じる"
+                        >
+                            ×
+                        </button>
+                    </div>
+                    <div className="grid grid-cols-1 gap-4 text-gray-700 text-sm">
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-500">波動数の説明</span>
+                            <p className="text-sm leading-relaxed whitespace-pre-line">
+                                {waveDetail.説明 || '情報なし'}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
+            
+            {showMirrorDetail && mirrorDetail && (
+                <div 
+                    data-modal="mirror-detail"
+                    className="mt-8 bg-white rounded-2xl shadow-lg border border-gray-200 p-6 transition-all"
+                >
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-2xl font-bold text-gray-800">
+                            鏡の向こうKIN {mirror} の詳細情報
+                        </h3>
+                        <button
+                            onClick={() => setShowMirrorDetail(false)}
+                            className="text-gray-500 hover:text-gray-700 text-lg"
+                            aria-label="鏡の向こうKINの詳細情報を閉じる"
+                        >
+                            ×
+                        </button>
+                    </div>
+                    <div className="grid grid-cols-1 gap-4 text-gray-700 text-sm">
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-500">紋章</span>
+                            <span className="text-base font-semibold text-indigo-700">
+                                {mirrorDetail.紋章?.join(' × ') || '情報なし'}
+                            </span>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-500">概要</span>
+                            <p className="text-sm leading-relaxed">{mirrorDetail.概要 || '情報なし'}</p>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-500">ワンポイント</span>
+                            <p className="text-sm leading-relaxed text-green-800 font-medium">
+                                {mirrorDetail.ワンポイント || '情報なし'}
+                            </p>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-500">著名人</span>
+                            <p className="text-sm">{mirrorDetail.著名人 || '情報なし'}</p>
+                        </div>
+
+                    </div>
+                </div>
+            )}
+            
+            {showOppositeDetail && oppositeDetail && (
+                <div 
+                    data-modal="opposite-detail"
+                    className="mt-8 bg-white rounded-2xl shadow-lg border border-gray-200 p-6 transition-all"
+                >
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-2xl font-bold text-gray-800">
+                            絶対反対KIN {opposite} の詳細情報
+                        </h3>
+                        <button
+                            onClick={() => setShowOppositeDetail(false)}
+                            className="text-gray-500 hover:text-gray-700 text-lg"
+                            aria-label="絶対反対KINの詳細情報を閉じる"
+                        >
+                            ×
+                        </button>
+                    </div>
+                    <div className="grid grid-cols-1 gap-4 text-gray-700 text-sm">
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-500">紋章</span>
+                            <span className="text-base font-semibold text-indigo-700">
+                                {oppositeDetail.紋章?.join(' × ') || '情報なし'}
+                            </span>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-500">概要</span>
+                            <p className="text-sm leading-relaxed">{oppositeDetail.概要 || '情報なし'}</p>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-500">ワンポイント</span>
+                            <p className="text-sm leading-relaxed text-green-800 font-medium">
+                                {oppositeDetail.ワンポイント || '情報なし'}
+                            </p>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-500">著名人</span>
+                            <p className="text-sm">{oppositeDetail.著名人 || '情報なし'}</p>
+                        </div>
+
                     </div>
                 </div>
             )}
