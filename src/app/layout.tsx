@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from './components/Header'
+import SessionProviderWrapper from './components/SessionProviderWrapper'
 
 export const metadata: Metadata = {
   title: "マヤ占い",
@@ -15,9 +16,11 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className="flex flex-col min-h-screen">
-        <Header />
-        <main className="flex-gro">{children}</main>
-        <Footer />
+        <SessionProviderWrapper>
+          <Header />
+          <main className="flex-grow">{children}</main>
+          <Footer />
+        </SessionProviderWrapper>
       </body>
     </html>
   );

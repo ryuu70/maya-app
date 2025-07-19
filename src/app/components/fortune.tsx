@@ -8,7 +8,7 @@ import {
     getMirrorKin,
     getOppositeKin,
 } from '@/app/lib/kin'
-import { getEkiDetail } from '@/app/lib/eki'
+import { getEkiDetail, getEkiDiscDetail } from '@/app/lib/eki'
 
 function formatJapaneseDate(dateStr: string): string {
     const date = new Date(dateStr)
@@ -25,6 +25,7 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
     const searchParams = useSearchParams()
     const [age, setAge] = useState<number>(Number(searchParams.get('age') ?? 0))
     const [showDetail, setShowDetail] = useState(false)
+    const [showEkiDetail, setShowEkiDetail] = useState(false)
 
     // メモ化してパフォーマンスを向上
     const fortuneData = useMemo(() => {
@@ -39,6 +40,7 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
         const mirror = getMirrorKin(kin)
         const opposite = getOppositeKin(kin)
         const ekiDetail = getEkiDetail(kin)
+        const ekiDiscDetail = getEkiDiscDetail(kin)
 
         return {
             kin,
@@ -46,6 +48,7 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
             mirror,
             opposite,
             ekiDetail,
+            ekiDiscDetail,
             targetDate
         }
     }, [birthday, age])
@@ -67,10 +70,14 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
         )
     }
 
-    const { kin, wave, mirror, opposite, ekiDetail } = fortuneData
+    const { kin, wave, mirror, opposite, ekiDetail, ekiDiscDetail } = fortuneData
 
     const handleKinClick = () => {
         setShowDetail(true)
+    }
+
+    const handleEkiClick = () => {
+        setShowEkiDetail(true)
     }
 
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -109,7 +116,7 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700 text-sm">
                     <button
-                        className="bg-blue-50 p-3 rounded shadow cursor-pointer hover:bg-blue-100 transition text-left"
+                        className="bg-blue-50 p-3 rounded shadow cursor-pointer hover:bg-blue-100 transition text-center"
                         onClick={handleKinClick}
                         aria-label={`KIN ${kin} の詳細情報を表示`}
                     >
@@ -128,10 +135,14 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
                         <span className="block text-xs text-gray-500">絶対反対KIN</span>
                         <span className="text-lg font-bold">{opposite}</span>
                     </div>
-                    <div className="bg-green-50 p-3 rounded shadow col-span-1 sm:col-span-2">
+                    <button
+                        className="bg-green-50 p-3 rounded shadow col-span-1 sm:col-span-2 cursor-pointer hover:bg-green-100 transition text-center"
+                        onClick={handleEkiClick}
+                        aria-label={`易 ${ekiDetail?.易 || '情報なし'} の詳細情報を表示`}
+                    >
                         <span className="block text-xs text-gray-500">易（えき）</span>
                         <span className="text-sm">{ekiDetail?.易 || '情報なし'}</span>
-                    </div>
+                    </button>
                     <div className="bg-yellow-50 p-3 rounded shadow col-span-1 sm:col-span-2">
                         <span className="block text-xs text-gray-500">応答掛（おうとかけ）</span>
                         <span className="text-sm text-green-800">{ekiDetail?.音 || '情報なし'}</span>
@@ -173,6 +184,37 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">著名人</span>
                             <p className="text-sm">{ekiDetail.著名人 || '情報なし'}</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+            
+            {showEkiDetail && ekiDiscDetail && (
+                <div className="mt-8 bg-white rounded-2xl shadow-lg border border-gray-200 p-6 transition-all">
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-2xl font-bold text-gray-800">
+                            易の詳細情報
+                        </h3>
+                        <button
+                            onClick={() => setShowEkiDetail(false)}
+                            className="text-gray-500 hover:text-gray-700 text-lg"
+                            aria-label="易の詳細情報を閉じる"
+                        >
+                            ×
+                        </button>
+                    </div>
+                    <div className="grid grid-cols-1 gap-4 text-gray-700 text-sm">
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-500">易名</span>
+                            <span className="text-base font-semibold text-green-700">
+                                {ekiDiscDetail.易 || '情報なし'}
+                            </span>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-500">易の説明</span>
+                            <p className="text-sm leading-relaxed whitespace-pre-line">
+                                {ekiDiscDetail.易の説明 || '情報なし'}
+                            </p>
                         </div>
                     </div>
                 </div>
