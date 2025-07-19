@@ -74,10 +74,24 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
 
     const handleKinClick = () => {
         setShowDetail(true)
+        // モーダル表示後に自動スクロール
+        setTimeout(() => {
+            const modal = document.querySelector('[data-modal="kin-detail"]')
+            if (modal) {
+                modal.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }
+        }, 100)
     }
 
     const handleEkiClick = () => {
         setShowEkiDetail(true)
+        // モーダル表示後に自動スクロール
+        setTimeout(() => {
+            const modal = document.querySelector('[data-modal="eki-detail"]')
+            if (modal) {
+                modal.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }
+        }, 100)
     }
 
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -116,12 +130,14 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700 text-sm">
                     <button
-                        className="bg-blue-50 p-3 rounded shadow cursor-pointer hover:bg-blue-100 transition text-center"
+                        className="bg-blue-50 p-3 rounded shadow cursor-pointer hover:bg-blue-100 active:bg-blue-200 active:scale-95 transition-all duration-150 text-center touch-manipulation relative overflow-hidden group"
                         onClick={handleKinClick}
                         aria-label={`KIN ${kin} の詳細情報を表示`}
                     >
+                        <div className="absolute inset-0 bg-blue-300 opacity-0 group-active:opacity-20 transition-opacity duration-150"></div>
                         <span className="block text-xs text-gray-500">KINナンバー</span>
                         <span className="text-xl font-bold text-red-600">{kin}</span>
+                        <span className="block text-xs text-blue-600 mt-1">タップして詳細表示</span>
                     </button>
                     <div className="bg-blue-50 p-3 rounded shadow">
                         <span className="block text-xs text-gray-500">マヤ暦波動数</span>
@@ -136,12 +152,14 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
                         <span className="text-lg font-bold">{opposite}</span>
                     </div>
                     <button
-                        className="bg-green-50 p-3 rounded shadow col-span-1 sm:col-span-2 cursor-pointer hover:bg-green-100 transition text-center"
+                        className="bg-green-50 p-3 rounded shadow col-span-1 sm:col-span-2 cursor-pointer hover:bg-green-100 active:bg-green-200 active:scale-95 transition-all duration-150 text-center touch-manipulation relative overflow-hidden group"
                         onClick={handleEkiClick}
                         aria-label={`易 ${ekiDetail?.易 || '情報なし'} の詳細情報を表示`}
                     >
+                        <div className="absolute inset-0 bg-green-300 opacity-0 group-active:opacity-20 transition-opacity duration-150"></div>
                         <span className="block text-xs text-gray-500">易（えき）</span>
                         <span className="text-sm">{ekiDetail?.易 || '情報なし'}</span>
+                        <span className="block text-xs text-green-600 mt-1">タップして詳細表示</span>
                     </button>
                     <div className="bg-yellow-50 p-3 rounded shadow col-span-1 sm:col-span-2">
                         <span className="block text-xs text-gray-500">応答掛（おうとかけ）</span>
@@ -151,7 +169,10 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
             </div>
             
             {showDetail && ekiDetail && (
-                <div className="mt-8 bg-white rounded-2xl shadow-lg border border-gray-200 p-6 transition-all">
+                <div 
+                    data-modal="kin-detail"
+                    className="mt-8 bg-white rounded-2xl shadow-lg border border-gray-200 p-6 transition-all"
+                >
                     <div className="flex justify-between items-center mb-4">
                         <h3 className="text-2xl font-bold text-gray-800">
                             KIN {kin} の詳細情報
@@ -190,7 +211,10 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
             )}
             
             {showEkiDetail && ekiDiscDetail && (
-                <div className="mt-8 bg-white rounded-2xl shadow-lg border border-gray-200 p-6 transition-all">
+                <div 
+                    data-modal="eki-detail"
+                    className="mt-8 bg-white rounded-2xl shadow-lg border border-gray-200 p-6 transition-all"
+                >
                     <div className="flex justify-between items-center mb-4">
                         <h3 className="text-2xl font-bold text-gray-800">
                             易の詳細情報
