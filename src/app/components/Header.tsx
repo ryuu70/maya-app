@@ -45,11 +45,14 @@ export default function Header() {
             <header className="fixed top-0 w-full z-50 bg-purple-900/85 backdrop-blur-md">
                 <div className="max-w-7xl mx-auto px-6 py-5">
                     <div className="flex justify-between items-center">
-                        <Link href="/" className="flex items-center space-x-3 text-2xl font-bold tracking-wide text-white">
-                            <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-blue-500 rounded-lg flex items-center justify-center">
-                                <span className="text-xl">🌟</span>
-                            </div>
-                            <span className="hidden sm:block">マヤ占い</span>
+                        <Link href="/" className="text-2xl font-bold tracking-wide text-white">
+                            <span className="block sm:hidden">マヤ占い</span>
+                            <span className="hidden sm:flex sm:items-center sm:space-x-3">
+                                <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-blue-500 rounded-lg flex items-center justify-center">
+                                    <span className="text-xl">🌟</span>
+                                </div>
+                                <span>マヤ占い</span>
+                            </span>
                         </Link>
                     </div>
                 </div>
@@ -66,11 +69,14 @@ export default function Header() {
             <div className="max-w-7xl mx-auto px-6 py-5">
                 <div className="flex justify-between items-center">
                     {/* ロゴ */}
-                    <Link href="/" className="flex items-center space-x-3 text-2xl font-bold tracking-wide text-white hover:text-purple-200 transition-colors group">
-                        <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-blue-500 rounded-lg flex items-center justify-center shadow-lg group-hover:shadow-purple-500/25 transition-all duration-300">
-                            <span className="text-xl">🌟</span>
-                        </div>
-                        <span className="hidden sm:block">マヤ占い</span>
+                    <Link href="/" className="text-2xl font-bold tracking-wide text-white hover:text-purple-200 transition-colors group">
+                        <span className="block sm:hidden">マヤ占い</span>
+                        <span className="hidden sm:flex sm:items-center sm:space-x-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-blue-500 rounded-lg flex items-center justify-center shadow-lg group-hover:shadow-purple-500/25 transition-all duration-300">
+                                <span className="text-xl">🌟</span>
+                            </div>
+                            <span>マヤ占い</span>
+                        </span>
                     </Link>
 
                     {/* デスクトップナビゲーション */}
