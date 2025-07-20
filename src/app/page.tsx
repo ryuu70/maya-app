@@ -39,14 +39,6 @@ export default async function Home() {
             </p>
             <Fortune birthday={session.user.birthday} name={session.user.name} />
           </div>
-          <div className="p-6">
-            <a
-              href="/fortune"
-              className="inline-block bg-blue-600 text-white px-6 py-3 mt-6 rounded hover:bg-blue-700"
-            >
-              占いを始める
-            </a>
-          </div>
         </>
       ) : (
         // 未ログインユーザー向けコンテンツ

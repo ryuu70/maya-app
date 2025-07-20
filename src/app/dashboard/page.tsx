@@ -156,10 +156,10 @@ function DashboardContent() {
               占いを始める
             </Link>
             <Link
-              href="/pricing"
+              href="/subscription"
               className="px-6 py-3 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition-colors"
             >
-              プラン管理
+              サブスクリプション管理
             </Link>
             <Link
               href="/admin"

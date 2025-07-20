@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
 import Image from 'next/image'
+import Link from 'next/link'
 import tarotData from '@/app/lib/tarot.json'
 
 type TarotCard = {
@@ -12,16 +14,57 @@ type TarotCard = {
 }
 
 export default function TarotPage() {
+    const { data: session, status } = useSession()
     const [cards, setCards] = useState<TarotCard[]>([])
     const [selectedCard, setSelectedCard] = useState<TarotCard | null>(null)
     const [showDetail, setShowDetail] = useState(false)
     const [isShuffling, setIsShuffling] = useState(false)
     const [backImageError, setBackImageError] = useState(false)
+    const [subscriptionStatus, setSubscriptionStatus] = useState<{
+        isPaid: boolean
+        subscriptionPlan: string
+        loading: boolean
+    }>({
+        isPaid: false,
+        subscriptionPlan: '',
+        loading: true
+    })
+
+    // サブスクリプション状態を取得
+    useEffect(() => {
+        const fetchSubscriptionStatus = async () => {
+            if (session?.user?.email) {
+                try {
+                    const response = await fetch(`/api/subscriptions/status?email=${session.user.email}`)
+                    const data = await response.json()
+                    
+                    setSubscriptionStatus({
+                        isPaid: data.user?.isPaid || false,
+                        subscriptionPlan: data.user?.subscriptionPlan || '',
+                        loading: false
+                    })
+                } catch (error) {
+                    console.error('サブスクリプション状態の取得に失敗:', error)
+                    setSubscriptionStatus(prev => ({ ...prev, loading: false }))
+                }
+            } else {
+                setSubscriptionStatus(prev => ({ ...prev, loading: false }))
+            }
+        }
+
+        if (status === 'authenticated') {
+            fetchSubscriptionStatus()
+        } else if (status === 'unauthenticated') {
+            setSubscriptionStatus(prev => ({ ...prev, loading: false }))
+        }
+    }, [session, status])
 
     // タロットカードの初期化
     useEffect(() => {
-        initializeCards()
-    }, [])
+        if (subscriptionStatus.isPaid) {
+            initializeCards()
+        }
+    }, [subscriptionStatus.isPaid])
 
     const initializeCards = () => {
         const allCards: TarotCard[] = Object.keys(tarotData).map(id => ({
@@ -107,6 +150,119 @@ export default function TarotPage() {
             keywords: card.逆位置キーワード,
             details: card.逆位置悩み別読み解き
         }
+    }
+
+    // ローディング状態
+    if (status === 'loading' || subscriptionStatus.loading) {
+        return (
+            <div className="min-h-screen py-8 pt-32 relative">
+                <div className="absolute inset-0 z-0">
+                    <Image
+                        src="/tarot/mat.png"
+                        alt="タロットマット"
+                        fill
+                        className="object-cover"
+                        priority
+                    />
+                    <div className="absolute inset-0 bg-black/30"></div>
+                </div>
+                <div className="max-w-6xl mx-auto px-6 relative z-10">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-500 mx-auto"></div>
+                        <p className="text-white mt-4">読み込み中...</p>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    // 未ログイン状態
+    if (status === 'unauthenticated') {
+        return (
+            <div className="min-h-screen py-8 pt-32 relative">
+                <div className="absolute inset-0 z-0">
+                    <Image
+                        src="/tarot/mat.png"
+                        alt="タロットマット"
+                        fill
+                        className="object-cover"
+                        priority
+                    />
+                    <div className="absolute inset-0 bg-black/30"></div>
+                </div>
+                <div className="max-w-6xl mx-auto px-6 relative z-10">
+                    <div className="text-center">
+                        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-8 max-w-md mx-auto">
+                            <div className="text-6xl mb-4">🔮</div>
+                            <h1 className="text-2xl font-bold text-white mb-4">タロット占い</h1>
+                            <p className="text-purple-200 mb-6">
+                                タロット占いをご利用いただくには、ログインが必要です。
+                            </p>
+                            <div className="space-y-3">
+                                <Link
+                                    href="/login"
+                                    className="block w-full bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                                >
+                                    ログイン
+                                </Link>
+                                <Link
+                                    href="/register"
+                                    className="block w-full bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors"
+                                >
+                                    新規登録
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    // 無料プランの場合
+    if (!subscriptionStatus.isPaid) {
+        return (
+            <div className="min-h-screen py-8 pt-32 relative">
+                <div className="absolute inset-0 z-0">
+                    <Image
+                        src="/tarot/mat.png"
+                        alt="タロットマット"
+                        fill
+                        className="object-cover"
+                        priority
+                    />
+                    <div className="absolute inset-0 bg-black/30"></div>
+                </div>
+                <div className="max-w-6xl mx-auto px-6 relative z-10">
+                    <div className="text-center">
+                        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-8 max-w-md mx-auto">
+                            <div className="text-6xl mb-4">🔒</div>
+                            <h1 className="text-2xl font-bold text-white mb-4">タロット占い</h1>
+                            <p className="text-purple-200 mb-4">
+                                タロット占いはBASICプラン以上の会員限定機能です。
+                            </p>
+                            <p className="text-purple-200 mb-6 text-sm">
+                                現在のプラン: {subscriptionStatus.subscriptionPlan || '無料プラン'}
+                            </p>
+                            <div className="space-y-3">
+                                <Link
+                                    href="/pricing"
+                                    className="block w-full bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                                >
+                                    プランアップグレード
+                                </Link>
+                                <Link
+                                    href="/"
+                                    className="block w-full bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors"
+                                >
+                                    ホームに戻る
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
     }
 
     return (
