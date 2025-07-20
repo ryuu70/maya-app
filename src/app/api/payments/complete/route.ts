@@ -2,9 +2,20 @@ import { NextRequest, NextResponse } from "next/server"
 import Stripe from "stripe"
 import { prisma } from "@/app/lib/prisma"
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-06-30.basil",
-})
+// Stripe初期化のエラーハンドリング
+let stripe: Stripe | null = null
+
+try {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.error("STRIPE_SECRET_KEYが設定されていません")
+  } else {
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: "2025-06-30.basil",
+    })
+  }
+} catch (error) {
+  console.error("Stripe初期化エラー:", error)
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,6 +30,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "セッションIDとユーザーメールが必要です" },
         { status: 400 }
+      )
+    }
+
+    // Stripe初期化の確認
+    if (!stripe) {
+      console.error("Stripeが初期化されていません")
+      return NextResponse.json(
+        { error: "Stripe設定が不完全です" },
+        { status: 500 }
       )
     }
 
@@ -70,7 +90,7 @@ export async function POST(request: NextRequest) {
 
     // サブスクリプション情報を取得
     let subscriptionInfo = null
-    if (session.subscription) {
+    if (session.subscription && stripe) {
       try {
         subscriptionInfo = await stripe.subscriptions.retrieve(session.subscription as string)
         console.log("サブスクリプション情報:", {

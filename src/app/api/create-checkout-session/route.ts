@@ -1,15 +1,26 @@
 import { NextRequest, NextResponse } from "next/server"
 import Stripe from "stripe"
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-06-30.basil",
-})
+// Stripe初期化のエラーハンドリング
+let stripe: Stripe | null = null
+
+try {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.error("STRIPE_SECRET_KEYが設定されていません")
+  } else {
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: "2025-06-30.basil",
+    })
+  }
+} catch (error) {
+  console.error("Stripe初期化エラー:", error)
+}
 
 export async function POST(request: NextRequest) {
   try {
-    // 環境変数の確認
-    if (!process.env.STRIPE_SECRET_KEY) {
-      console.error("STRIPE_SECRET_KEYが設定されていません")
+    // Stripe初期化の確認
+    if (!stripe) {
+      console.error("Stripeが初期化されていません")
       return NextResponse.json(
         { error: "Stripe設定が不完全です" },
         { status: 500 }

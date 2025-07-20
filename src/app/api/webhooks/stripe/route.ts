@@ -3,9 +3,20 @@ import Stripe from "stripe"
 import { headers } from "next/headers"
 import { prisma } from "@/app/lib/prisma"
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-06-30.basil",
-})
+// Stripe初期化のエラーハンドリング
+let stripe: Stripe | null = null
+
+try {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.error("STRIPE_SECRET_KEYが設定されていません")
+  } else {
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: "2025-06-30.basil",
+    })
+  }
+} catch (error) {
+  console.error("Stripe初期化エラー:", error)
+}
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
@@ -49,6 +60,14 @@ export async function POST(request: NextRequest) {
         )
       }
     } else {
+      if (!stripe) {
+        console.error("Stripeが初期化されていません")
+        return NextResponse.json(
+          { error: "Stripe設定が不完全です" },
+          { status: 500 }
+        )
+      }
+      
       try {
         event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
         console.log("Webhook signature verified successfully")
