@@ -26,7 +26,7 @@ export default async function AdminPage() {
     })
 
     return (
-        <div className="p-6 pt-32 mb-100">
+        <div className="p-6 sm:p-8 lg:p-10">
             <h1 className="text-2xl font-bold mb-4">管理者ページ - ユーザー一覧</h1>
 
             <table className="w-full border border--300 text-sm">

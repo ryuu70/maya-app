@@ -24,3 +24,14 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* ヘッダーとのマージン調整 */
+main {
+  padding-top: 5rem; /* 80px */
+}
+
+@media (min-width: 1024px) {
+  main {
+    padding-top: 6rem; /* 96px */
+  }
+}

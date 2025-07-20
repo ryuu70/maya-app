@@ -60,6 +60,24 @@ export default async function Home() {
               あなたの本質的な性格や運命の方向性を示しています。
             </p>
             
+            {/* 無料占いセクション */}
+            <div className="mb-12">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                  無料でKINナンバーを診断
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  誕生日を入力するだけで、あなたのKINナンバーを無料で診断できます
+                </p>
+                <a
+                  href="/free-fortune"
+                  className="inline-block bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all transform hover:scale-105"
+                >
+                  無料占いを始める
+                </a>
+              </div>
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div className="bg-purple-50 p-6 rounded-lg">
                 <h3 className="text-xl font-semibold text-purple-800 mb-3">🌟 KINナンバー</h3>

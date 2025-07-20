@@ -26,6 +26,11 @@ model User {
   isPaid       Boolean      @default(false)   // 課金しているか
   renewalStatus RenewalStatus @default(NONE)  // 継続申請の状態
 
+  // 👇 Stripe関連
+  stripeCustomerId   String?
+  subscriptionPlan   SubscriptionPlan?
+  subscriptionStatus String?
+
   accounts       Account[]
   sessions       Session[]
 }
@@ -78,4 +83,11 @@ enum RenewalStatus {
   NONE         // 申請なし
   REQUESTED    // 継続申請中
   APPROVED     // 継続申請許可済み
+}
+
+
+enum SubscriptionPlan {
+  BASIC
+  PREMIUM
+  PRO
 }

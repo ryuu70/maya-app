@@ -29,7 +29,7 @@ export default function RootLayout({
 function Footer() {
   return (
     <footer className="bg-gray-200 text-center text-sm py-4 text-gray-600">
-      &copy; {new Date().getFullYear()} Kougetuyuu. All rights reserved.
+      &copy; {new Date().getFullYear()} Reinouranaisi. All rights reserved.
     </footer>
   )
 }
