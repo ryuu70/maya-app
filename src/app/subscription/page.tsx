@@ -131,7 +131,7 @@ export default function SubscriptionPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl font-bold text-white mb-8 text-center">
             サブスクリプション管理
@@ -148,12 +148,12 @@ export default function SubscriptionPage() {
           )}
 
           {subscriptionData ? (
-            <div className="bg-white rounded-lg shadow-xl p-6 mb-6">
+            <div className="bg-white rounded-lg shadow-xl p-4 sm:p-6 mb-6">
               <h2 className="text-2xl font-semibold mb-6 text-gray-800">
                 現在のサブスクリプション
               </h2>
 
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 <div>
                   <h3 className="text-lg font-medium text-gray-700 mb-3">ユーザー情報</h3>
                   <div className="space-y-2 text-gray-600">

@@ -32,7 +32,7 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-2 sm:p-4">
             <div className="w-full max-w-md">
                 {/* ロゴ・タイトルエリア */}
                 <div className="text-center mb-8">
@@ -44,7 +44,7 @@ export default function LoginPage() {
                 </div>
 
                 {/* ログインフォーム */}
-                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/20">
+                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 sm:p-8 shadow-2xl border border-white/20">
                     <div className="text-center mb-6">
                         <h2 className="text-2xl font-bold text-white mb-2">ログイン</h2>
                         <p className="text-purple-200 text-sm">アカウントにログインしてください</p>
@@ -113,7 +113,7 @@ export default function LoginPage() {
                         <button 
                             type="submit" 
                             disabled={isLoading}
-                            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-transparent transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-4 rounded-lg font-semibold text-base sm:text-lg hover:from-purple-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-transparent transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                         >
                             {isLoading ? (
                                 <div className="flex items-center justify-center">

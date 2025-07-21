@@ -18,9 +18,7 @@ function PricingContent() {
       price: "¥980/月",
       features: [
         "マヤ暦占い",
-        "タロット占い",
-        "基本的な運勢レポート",
-        "月1回の詳細分析"
+        "タロット占い"
       ],
       popular: false
     },
@@ -32,7 +30,6 @@ function PricingContent() {
         "ベーシックプランの全機能",
         "無制限の占い回数",
         "詳細な運勢分析",
-        "パーソナルアドバイス",
         "優先サポート"
       ],
       popular: true
@@ -40,7 +37,7 @@ function PricingContent() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 py-8 px-2 sm:py-12 sm:px-4">
       <div className="max-w-6xl mx-auto">
         {/* キャンセルメッセージ */}
         {isCanceled && (
@@ -89,11 +86,11 @@ function PricingContent() {
         </div>
 
         {/* プランカード */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 max-w-4xl mx-auto">
           {PLANS.map((plan) => (
             <div
               key={plan.name}
-              className={`relative bg-white rounded-2xl shadow-xl p-8 ${
+              className={`relative bg-white rounded-2xl shadow-xl p-4 sm:p-8 ${
                 plan.popular
                   ? "ring-2 ring-purple-500 transform scale-105"
                   : ""
