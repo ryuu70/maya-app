@@ -39,18 +39,18 @@ export default function LpTiktokPage() {
   };
   // const { data: session } = useSession();
   return (
-    <div>
-      <header className="w-full max-w-lg mx-auto pt-8 pb-4 px-4 sm:px-8 bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 flex flex-col items-center justify-start p-0 sm:p-4">
+      <header className="w-full max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto pt-8 pb-4 px-4 sm:px-8 md:px-12 lg:px-16">
         <h1 className="text-2xl xs:text-3xl sm:text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 mb-6 sm:mb-8 drop-shadow-lg tracking-tight leading-tight">
           <span role="img" aria-label="crystal-ball">🔮</span> TikTok限定！かんたんマヤ診断
         </h1>
       </header>
-      <main className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 w-full max-w-lg mx-auto flex-1 flex flex-col justify-start items-center px-2 sm:px-0">
-        <div className="w-full bg-white/80 rounded-3xl shadow-2xl p-4 sm:p-10 mt-0 sm:mt-6 border border-white/30 backdrop-blur-xl relative overflow-hidden">
+      <main className="min-h-screen w-full flex-1 flex flex-col items-center justify-start px-2 sm:px-0">
+        <div className="w-full max-w-lg md:max-w-2xl lg:max-w-3xl bg-white/80 rounded-3xl shadow-2xl p-4 sm:p-10 md:p-12 lg:p-16 mt-0 sm:mt-6 border border-white/30 backdrop-blur-xl relative overflow-hidden mx-auto">
           <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-40 bg-gradient-to-br from-pink-300 via-purple-300 to-indigo-300 opacity-30 rounded-full blur-2xl z-0"></div>
           <div className="relative z-10">
             {!showResult ? (
-              <form onSubmit={handleDiagnose}>
+              <form onSubmit={handleDiagnose} className="space-y-8">
                 {questions.map((q, idx) => (
                   <div key={q.id}>
                     {q.type === "text" && (
@@ -100,8 +100,8 @@ export default function LpTiktokPage() {
                 </button>
               </form>
             ) : (
-              <div className="mt-4 px-1 sm:px-0">
-                <div className="bg-white/90 rounded-2xl p-4 sm:p-6 mb-4 shadow-xl border border-purple-100/40 relative overflow-hidden">
+              <div className="mt-4 px-1 sm:px-0 md:px-8 lg:px-16">
+                <div className="bg-white/90 rounded-2xl p-4 sm:p-6 md:p-10 mb-4 shadow-xl border border-purple-100/40 relative overflow-hidden max-w-lg md:max-w-xl lg:max-w-2xl mx-auto">
                   <div className="absolute -top-8 right-0 w-24 h-24 bg-gradient-to-br from-pink-200 via-purple-200 to-indigo-200 opacity-30 rounded-full blur-2xl z-0"></div>
                   <div className="relative z-10">
                     <h2 className="text-xl sm:text-2xl font-bold text-pink-600 mb-4 text-center drop-shadow">{result?.name}さんの診断結果</h2>
