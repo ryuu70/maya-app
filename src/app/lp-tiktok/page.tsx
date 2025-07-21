@@ -105,6 +105,91 @@ export default function LpTiktokPage() {
                   <div className="absolute -top-8 right-0 w-24 h-24 bg-gradient-to-br from-pink-200 via-purple-200 to-indigo-200 opacity-30 rounded-full blur-2xl z-0"></div>
                   <div className="relative z-10">
                     <h2 className="text-xl sm:text-2xl font-bold text-pink-600 mb-4 text-center drop-shadow">{result?.name}さんの診断結果</h2>
+                    {result && (
+                      <div className="space-y-4 text-base">
+                        {/* KINナンバー */}
+                        <div className="rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100/60 shadow p-4 flex flex-col">
+                          <span className="text-xs font-bold text-purple-500 mb-1">KINナンバー</span>
+                          <span className="font-bold text-lg text-black">{result.kin ?? '不明'}</span>
+                        </div>
+                        {/* 掛 */}
+                        {result.kake && (
+                          <>
+                            <div className="rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100/60 shadow p-4 flex flex-col">
+                              <span className="text-xs font-bold text-purple-500 mb-1">掛</span>
+                              <span className="font-bold text-lg text-black">{result.kake.卦}</span>
+                            </div>
+                            {/* 掛けの象 */}
+                            <div className="rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100/60 shadow p-4 flex flex-col">
+                              <span className="text-xs font-bold text-purple-500 mb-1">掛けの象</span>
+                              <span className="text-black">{result.kake.詳細?.卦の象}</span>
+                            </div>
+                            {/* 病気 */}
+                            <div className="rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100/60 shadow p-4 flex flex-col">
+                              <span className="text-xs font-bold text-purple-500 mb-1">病気</span>
+                              <span className="text-black">{result.kake.詳細?.占いの目安?.病気}</span>
+                            </div>
+                            {/* 失せ物 */}
+                            <div className="rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100/60 shadow p-4 flex flex-col">
+                              <span className="text-xs font-bold text-purple-500 mb-1">失せ物</span>
+                              <span className="text-black">{result.kake.詳細?.占いの目安?.失せ物}</span>
+                            </div>
+                            {/* 人物 */}
+                            <div className="rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100/60 shadow p-4 flex flex-col">
+                              <span className="text-xs font-bold text-purple-500 mb-1">人物</span>
+                              <span className="text-black">{result.kake.詳細?.占いの目安?.人物}</span>
+                            </div>
+                            {/* 愛情・結婚（2行目まで表示） */}
+                            <div className="rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100/60 shadow p-4 flex flex-col relative">
+                              <span className="text-xs font-bold text-pink-500 mb-1">愛情・結婚</span>
+                              <span className="text-black">
+                                {(() => {
+                                  const text = result.kake.詳細?.占いの目安?.['愛情・結婚'] || '';
+                                  const sentences = text.match(/[^。！？!?\n]+[。！？!?]?/g) || [text];
+                                  const visible = sentences.slice(0, 2).join("");
+                                  const hidden = sentences.slice(2).join("");
+                                  return (
+                                    <>
+                                      <span>{visible}</span>
+                                      {hidden && (
+                                        <span className="block mt-2">
+                                          <span className="inline-block align-middle w-full text-center select-none" style={{ filter: "blur(6px)", background: "rgba(255,255,255,0.4)", borderRadius: "10px", padding: "16px 10px", boxShadow: "0 4px 32px 0 rgba(80,0,120,0.10)", border: "1.5px solid rgba(180,180,255,0.25)", backdropFilter: "blur(2px)" }}>
+                                            <span className="block text-lg font-semibold text-purple-700 mb-2 flex items-center justify-center gap-2">🔒 <span>有料会員限定</span></span>
+                                            <span className="block text-base font-bold text-pink-600 mb-2">愛情・結婚の続き</span>
+                                            <span className="block text-gray-500 mb-1">ここにはあなたの恋愛・結婚の詳細なアドバイスが隠されています…</span>
+                                            <span className="block text-gray-400 italic">（新規登録またはログインで全ての情報が解放されます）</span>
+                                            <span className="block mt-4 text-2xl text-purple-300/80">•••</span>
+                                            <span className="block mt-4">{hidden}</span>
+                                          </span>
+                                          <div className="w-full flex justify-center gap-4 mt-3">
+                                            <Link href="/register?from=lp-tiktok" className="px-6 py-2 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-pink-600 hover:to-indigo-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-purple-200/30">新規登録</Link>
+                                            <Link href="/login?from=lp-tiktok" className="px-6 py-2 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 hover:from-indigo-600 hover:to-pink-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-pink-200/30">ログイン</Link>
+                                          </div>
+                                        </span>
+                                      )}
+                                    </>
+                                  );
+                                })()}
+                              </span>
+                            </div>
+                            {/* 運勢・交渉・商取引（有料部分） */}
+                            <div className="rounded-xl bg-gradient-to-r from-purple-100/60 to-pink-100/60 border border-purple-200/40 shadow-lg p-6 flex flex-col items-center relative overflow-hidden">
+                              <span className="inline-block align-middle w-full text-center" style={{ background: "rgba(255,255,255,0.4)", borderRadius: "14px", padding: "24px 14px", boxShadow: "0 4px 32px 0 rgba(80,0,120,0.10)", border: "1.5px solid rgba(180,180,255,0.25)", backdropFilter: "blur(2px)" }}>
+                                <span className="block text-lg font-semibold text-purple-700 mb-2 flex items-center justify-center gap-2">🔒 <span>有料会員限定</span></span>
+                                <span className="block text-base font-bold text-pink-600 mb-2">運勢・交渉・商取引</span>
+                                <span className="block text-gray-500 mb-1">ここにはあなたの運命や人間関係、仕事・金運の詳細なアドバイスが隠されています…</span>
+                                <span className="block text-gray-400 italic">（新規登録またはログインで全ての情報が解放されます）</span>
+                                <span className="block mt-4 text-2xl text-purple-300/80">•••</span>
+                              </span>
+                              <div className="w-full flex justify-center gap-4 mt-6">
+                                <Link href="/register?from=lp-tiktok" className="px-7 py-3 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-pink-600 hover:to-indigo-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-purple-200/30">新規登録</Link>
+                                <Link href="/login?from=lp-tiktok" className="px-7 py-3 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 hover:from-indigo-600 hover:to-pink-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-pink-200/30">ログイン</Link>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )}
                     <Link href="/">トップへ戻る</Link>
                   </div>
                 </div>

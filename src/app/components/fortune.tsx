@@ -47,6 +47,7 @@ function renderWithBlur(text: string, showButton = false) {
 export default function Fortune({ birthday, name }: { birthday: string; name: string }) {
     const { data: session } = useSession();
     const [isPaid, setIsPaid] = useState<boolean | null>(null);
+    const [mounted, setMounted] = useState(false);
     const router = useRouter()
     const searchParams = useSearchParams()
     const [age, setAge] = useState<number>(Number(searchParams.get('age') ?? 0))
@@ -108,9 +109,11 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
         setIsPaid(!!data?.user?.isPaid);
       }
       fetchSubscription();
+      setMounted(true);
     }, [session]);
 
     // エラー状態の処理
+    if (!mounted) return null;
     if (fortuneData === null) {
         return (
             <div className="max-w-3xl mx-auto px-6 py-8">
@@ -437,7 +440,26 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">ワンポイント</span>
                             <p className="text-sm leading-relaxed text-green-800 font-medium">
-                                {mirrorDetail.ワンポイント || '情報なし'}
+                                {isPaid ? (mirrorDetail.ワンポイント || '情報なし') : (
+                                  (() => {
+                                    const text = mirrorDetail.ワンポイント || '';
+                                    const visible = text.slice(0, 10);
+                                    const hidden = text.slice(10);
+                                    return (
+                                      <>
+                                        <span>{visible}</span>
+                                        {hidden && (
+                                          <span className="block mt-2">
+                                            <span className="inline-block align-middle w-full text-black select-none" style={{ filter: "blur(6px)", background: "rgba(255,255,255,0.4)", borderRadius: "10px", padding: "8px 10px", boxShadow: "0 4px 32px 0 rgba(80,0,120,0.10)", border: "1.5px solid rgba(180,180,255,0.25)", backdropFilter: "blur(2px)" }}>{hidden}</span>
+                                            <div className="w-full flex justify-center gap-4 mt-3">
+                                              <a href="/pricing" className="px-6 py-2 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-pink-600 hover:to-indigo-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-purple-200/30">有料プラン登録で全て表示</a>
+                                            </div>
+                                          </span>
+                                        )}
+                                      </>
+                                    );
+                                  })()
+                                )}
                             </p>
                         </div>
                         <div className="flex flex-col">
@@ -480,7 +502,26 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">ワンポイント</span>
                             <p className="text-sm leading-relaxed text-green-800 font-medium">
-                                {oppositeDetail.ワンポイント || '情報なし'}
+                                {isPaid ? (oppositeDetail.ワンポイント || '情報なし') : (
+                                  (() => {
+                                    const text = oppositeDetail.ワンポイント || '';
+                                    const visible = text.slice(0, 10);
+                                    const hidden = text.slice(10);
+                                    return (
+                                      <>
+                                        <span>{visible}</span>
+                                        {hidden && (
+                                          <span className="block mt-2">
+                                            <span className="inline-block align-middle w-full text-black select-none" style={{ filter: "blur(6px)", background: "rgba(255,255,255,0.4)", borderRadius: "10px", padding: "8px 10px", boxShadow: "0 4px 32px 0 rgba(80,0,120,0.10)", border: "1.5px solid rgba(180,180,255,0.25)", backdropFilter: "blur(2px)" }}>{hidden}</span>
+                                            <div className="w-full flex justify-center gap-4 mt-3">
+                                              <a href="/pricing" className="px-6 py-2 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-pink-600 hover:to-indigo-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-purple-200/30">有料プラン登録で全て表示</a>
+                                            </div>
+                                          </span>
+                                        )}
+                                      </>
+                                    );
+                                  })()
+                                )}
                             </p>
                         </div>
                         <div className="flex flex-col">
