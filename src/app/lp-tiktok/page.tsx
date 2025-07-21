@@ -49,7 +49,7 @@ export default function LpTiktokPage() {
         <div className="relative z-10">
           <h1 className="text-3xl sm:text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 mb-8 drop-shadow-lg tracking-tight">\uD83D\uDD2E TikTok限定！かんたんマヤ診断</h1>
           {!showResult ? (
-            <form onSubmit={handleDiagnose} className="space-y-8">
+            <form onSubmit={handleDiagnose} className="space-y-8 px-2 sm:px-0">
               {questions.map((q, idx) => (
                 <div key={q.id} className="flex flex-col gap-2">
                   <div className="font-semibold text-lg text-purple-700 mb-1 flex items-center gap-2">
@@ -71,7 +71,7 @@ export default function LpTiktokPage() {
                       type="date"
                       value={answers[idx]}
                       onChange={e => handleChange(idx, e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-lg bg-white text-black shadow-sm"
+                      className="w-full px-5 py-3 rounded-xl border border-purple-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-base md:text-lg bg-white text-black shadow-sm min-w-0"
                       required
                     />
                   )}
@@ -103,7 +103,7 @@ export default function LpTiktokPage() {
               </button>
             </form>
           ) : (
-            <div className="mt-4">
+            <div className="mt-4 px-2 sm:px-0">
               <div className="bg-white/90 rounded-2xl p-6 mb-4 shadow-xl border border-purple-100/40 relative overflow-hidden">
                 {/* 結果上部の装飾 */}
                 <div className="absolute -top-8 right-0 w-24 h-24 bg-gradient-to-br from-pink-200 via-purple-200 to-indigo-200 opacity-30 rounded-full blur-2xl z-0"></div>
