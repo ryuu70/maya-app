@@ -82,11 +82,9 @@ export default function Header() {
                     {/* デスクトップナビゲーション */}
                     <nav className="hidden xl:flex items-center space-x-1">
                         <div className="flex space-x-1">
-                            <Link href="/fortune" className="px-3 py-2 text-white hover:text-purple-200 hover:bg-white/10 rounded-lg transition-all duration-200 font-medium text-sm">運勢鑑定</Link>
+                            <Link href="/" className="px-3 py-2 text-white hover:text-purple-200 hover:bg-white/10 rounded-lg transition-all duration-200 font-medium text-sm">運勢鑑定</Link>
                             <Link href="/compatibility" className="px-3 py-2 text-white hover:text-purple-200 hover:bg-white/10 rounded-lg transition-all duration-200 font-medium text-sm">相性鑑定</Link>
-                            <Link href="/group_compatibility" className="px-3 py-2 text-white hover:text-purple-200 hover:bg-white/10 rounded-lg transition-all duration-200 font-medium text-sm">グループ相性</Link>
-                            <Link href="/timeline" className="px-3 py-2 text-white hover:text-purple-200 hover:bg-white/10 rounded-lg transition-all duration-200 font-medium text-sm">KIN年表</Link>
-                            <Link href="/takuzitsu" className="px-3 py-2 text-white hover:text-purple-200 hover:bg-white/10 rounded-lg transition-all duration-200 font-medium text-sm">択日</Link>
+                            <span className="px-3 py-2 text-gray-400 bg-white/5 rounded-lg font-medium text-sm cursor-not-allowed select-none">グループ相性（カミングスーン）</span>
                             <Link href="/tarot" className="px-3 py-2 text-white hover:text-purple-200 hover:bg-white/10 rounded-lg transition-all duration-200 font-medium text-sm">タロット</Link>
                         </div>
                         
@@ -128,8 +126,9 @@ export default function Header() {
                     {/* タブレットナビゲーション（lg-xl） */}
                     <nav className="hidden lg:flex xl:hidden items-center space-x-1">
                         <div className="flex space-x-1">
-                            <Link href="/fortune" className="px-2 py-2 text-white hover:text-purple-200 hover:bg-white/10 rounded-lg transition-all duration-200 font-medium text-xs">運勢</Link>
+                            <Link href="/" className="px-2 py-2 text-white hover:text-purple-200 hover:bg-white/10 rounded-lg transition-all duration-200 font-medium text-xs">運勢</Link>
                             <Link href="/compatibility" className="px-2 py-2 text-white hover:text-purple-200 hover:bg-white/10 rounded-lg transition-all duration-200 font-medium text-xs">相性</Link>
+                            <span className="px-2 py-2 text-gray-400 bg-white/5 rounded-lg font-medium text-xs cursor-not-allowed select-none">グループ相性（カミングスーン）</span>
                             <Link href="/tarot" className="px-2 py-2 text-white hover:text-purple-200 hover:bg-white/10 rounded-lg transition-all duration-200 font-medium text-xs">タロット</Link>
                         </div>
                         
@@ -206,7 +205,7 @@ export default function Header() {
                         {/* メインナビゲーション */}
                         <div className="space-y-2">
                             <Link 
-                                href="/fortune" 
+                                href="/" 
                                 onClick={closeMenu}
                                 className="block text-white hover:text-purple-200 transition-colors py-2 px-3 rounded-lg hover:bg-white/10"
                             >
@@ -219,27 +218,11 @@ export default function Header() {
                             >
                                 💕 相性鑑定
                             </Link>
-                            <Link 
-                                href="/group_compatibility" 
-                                onClick={closeMenu}
-                                className="block text-white hover:text-purple-200 transition-colors py-2 px-3 rounded-lg hover:bg-white/10"
+                            <span 
+                                className="block text-gray-400 bg-white/5 transition-colors py-2 px-3 rounded-lg font-medium cursor-not-allowed select-none"
                             >
-                                👥 グループ相性鑑定
-                            </Link>
-                            <Link 
-                                href="/timeline" 
-                                onClick={closeMenu}
-                                className="block text-white hover:text-purple-200 transition-colors py-2 px-3 rounded-lg hover:bg-white/10"
-                            >
-                                📅 KIN年表作成
-                            </Link>
-                            <Link 
-                                href="/takuzitsu" 
-                                onClick={closeMenu}
-                                className="block text-white hover:text-purple-200 transition-colors py-2 px-3 rounded-lg hover:bg-white/10"
-                            >
-                                📊 択日
-                            </Link>
+                                👥 グループ相性鑑定（カミングスーン）
+                            </span>
                             <Link 
                                 href="/tarot" 
                                 onClick={closeMenu}

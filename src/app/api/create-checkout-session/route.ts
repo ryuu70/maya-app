@@ -68,8 +68,8 @@ export async function POST(request: NextRequest) {
         metadata: {
           userEmail: userEmail,
         },
-        // 無料トライアル期間を30日間設定
-        trial_period_days: 30,
+        // 無料トライアル期間を7日間に変更
+        trial_period_days: 7,
       },
     })
 

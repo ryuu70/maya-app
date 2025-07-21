@@ -21,6 +21,28 @@ function calculateAgeDate(birthdayStr: string, age: number): Date {
     return new Date(date.getFullYear() + age, date.getMonth(), date.getDate())
 }
 
+// テキストを2文まで表示し、それ以降はblur＋有料案内
+function renderWithBlur(text: string, showButton = false) {
+  const sentences = text.match(/[^。！？!?\n]+[。！？!?]?/g) || [text];
+  const visible = sentences.slice(0, 2).join("");
+  const hidden = sentences.slice(2).join("");
+  return (
+    <>
+      <span>{visible}</span>
+      {hidden && (
+        <span className="block mt-2">
+          <span className="inline-block align-middle w-full text-black select-none" style={{ filter: "blur(6px)", background: "rgba(255,255,255,0.4)", borderRadius: "10px", padding: "8px 10px", boxShadow: "0 4px 32px 0 rgba(80,0,120,0.10)", border: "1.5px solid rgba(180,180,255,0.25)", backdropFilter: "blur(2px)" }}>{hidden}</span>
+          {showButton && (
+            <div className="w-full flex justify-center gap-4 mt-3">
+              <a href="/pricing" className="px-6 py-2 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-pink-600 hover:to-indigo-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-purple-200/30">有料プラン登録で全て表示</a>
+            </div>
+          )}
+        </span>
+      )}
+    </>
+  );
+}
+
 export default function Fortune({ birthday, name }: { birthday: string; name: string }) {
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -44,7 +66,6 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
         const mirror = getMirrorKin(kin)
         const opposite = getOppositeKin(kin)
         const ekiDetail = getEkiDetail(kin)
-        const ekiDiscDetail = getEkiDiscDetail(kin)
         const waveDetail = getWaveDetail(wave)
         const mirrorDetail = getEkiDetail(mirror)
         const mirrorEkiDiscDetail = getEkiDiscDetail(mirror)
@@ -60,7 +81,6 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
             mirror,
             opposite,
             ekiDetail,
-            ekiDiscDetail,
             waveDetail,
             mirrorDetail,
             mirrorEkiDiscDetail,
@@ -96,7 +116,6 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
         mirror,
         opposite,
         ekiDetail, 
-        ekiDiscDetail, 
         waveDetail,
         mirrorDetail,
         oppositeDetail,
@@ -287,7 +306,8 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
                 </div>
             )}
             
-            {showEkiDetail && ekiDiscDetail && (
+            {/* 易の詳細モーダル */}
+            {showEkiDetail && fortuneData.kakeDetail && (
                 <div 
                     data-modal="eki-detail"
                     className="mt-8 bg-white rounded-2xl shadow-lg border border-gray-200 p-6 transition-all"
@@ -304,58 +324,42 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
                             ×
                         </button>
                     </div>
-                    {fortuneData.kakeDetail ? (
-                        <div className="grid grid-cols-1 gap-4 text-gray-700 text-sm">
-                            <div className="flex flex-col">
-                                <span className="text-xs text-gray-500">卦名</span>
-                                <span className="text-base font-semibold text-green-700">
-                                    {fortuneData.kakeDetail.卦} (第{fortuneData.kakeDetail.No}卦)
-                                </span>
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-xs text-gray-500">卦の象</span>
-                                <p className="text-sm leading-relaxed">{fortuneData.kakeDetail.詳細.卦の象}</p>
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-xs text-gray-500">運勢</span>
-                                <p className="text-sm leading-relaxed whitespace-pre-line">
-                                    {fortuneData.kakeDetail.詳細.占いの目安.運勢}
-                                </p>
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-xs text-gray-500">交渉・商取引</span>
-                                <p className="text-sm leading-relaxed whitespace-pre-line">
-                                    {fortuneData.kakeDetail.詳細.占いの目安['交渉・商取引']}
-                                </p>
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-xs text-gray-500">愛情・結婚</span>
-                                <p className="text-sm leading-relaxed whitespace-pre-line">
-                                    {fortuneData.kakeDetail.詳細.占いの目安['愛情・結婚']}
-                                </p>
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-xs text-gray-500">病気</span>
-                                <p className="text-sm leading-relaxed whitespace-pre-line">
-                                    {fortuneData.kakeDetail.詳細.占いの目安.病気}
-                                </p>
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-xs text-gray-500">失せ物</span>
-                                <p className="text-sm leading-relaxed whitespace-pre-line">
-                                    {fortuneData.kakeDetail.詳細.占いの目安.失せ物}
-                                </p>
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-xs text-gray-500">人物</span>
-                                <p className="text-sm leading-relaxed whitespace-pre-line">
-                                    {fortuneData.kakeDetail.詳細.占いの目安.人物}
-                                </p>
-                            </div>
+                    <div className="grid grid-cols-1 gap-4 text-gray-700 text-sm">
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-500">卦名</span>
+                            <span className="text-base font-semibold text-green-700">
+                                {fortuneData.kakeDetail.卦} (第{fortuneData.kakeDetail.No}卦)
+                            </span>
                         </div>
-                    ) : (
-                        <div className="text-gray-500">卦の情報がありません</div>
-                    )}
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-500">卦の象</span>
+                            <p className="text-sm leading-relaxed whitespace-pre-line">{renderWithBlur(fortuneData.kakeDetail.詳細.卦の象, false)}</p>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-500">病気</span>
+                            <p className="text-sm leading-relaxed whitespace-pre-line">{renderWithBlur(fortuneData.kakeDetail.詳細.占いの目安.病気, false)}</p>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-500">失せ物</span>
+                            <p className="text-sm leading-relaxed whitespace-pre-line">{renderWithBlur(fortuneData.kakeDetail.詳細.占いの目安.失せ物, false)}</p>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-500">人物</span>
+                            <p className="text-sm leading-relaxed whitespace-pre-line">{renderWithBlur(fortuneData.kakeDetail.詳細.占いの目安.人物, false)}</p>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-500">愛情・結婚</span>
+                            <p className="text-sm leading-relaxed whitespace-pre-line">{renderWithBlur(fortuneData.kakeDetail.詳細.占いの目安['愛情・結婚'], true)}</p>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-500">運勢</span>
+                            <p className="text-sm leading-relaxed whitespace-pre-line">{renderWithBlur(fortuneData.kakeDetail.詳細.占いの目安.運勢, false)}</p>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-500">交渉・商取引</span>
+                            <p className="text-sm leading-relaxed whitespace-pre-line">{renderWithBlur(fortuneData.kakeDetail.詳細.占いの目安['交渉・商取引'], false)}</p>
+                        </div>
+                    </div>
                 </div>
             )}
             

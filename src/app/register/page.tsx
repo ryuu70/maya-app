@@ -4,16 +4,27 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { signIn } from 'next-auth/react';
+import { Suspense } from 'react'
 
-export default function RegisterPage() {
+function RegisterForm() {
     const router = useRouter()
+    const searchParams = useSearchParams()
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [birthday, setBirthday] = useState('')
     const [message, setMessage] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+
+    const PLAN_OPTIONS = [
+      { label: "星読みベーシック", priceId: "price_1RmpUEIvcf3ORJfnX9K6OVBB" },
+      { label: "神託プレミアム", priceId: "price_1RmpV3Ivcf3ORJfnZkp4viip" },
+    ];
+    const [selectedPlan, setSelectedPlan] = useState(PLAN_OPTIONS[0].priceId);
+
+    const isFromLpTiktok = searchParams.get('from') === 'lp-tiktok';
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -30,10 +41,38 @@ export default function RegisterPage() {
             const data = await res.json()
             
             if (data.success) {
-                setMessage('登録が完了しました！ログインページに移動します...')
-                setTimeout(() => {
-                    router.push('/login')
-                }, 2000)
+                setMessage('登録が完了しました！自動的にログインします...')
+                // 自動ログイン
+                const loginResult = await signIn('credentials', {
+                  redirect: false,
+                  email,
+                  password,
+                });
+                if (loginResult && !loginResult.error) {
+                    // TikTok診断ページから来た場合はStripe Checkoutへ遷移
+                    if (isFromLpTiktok) {
+                      setMessage('プラン決済ページに移動します...')
+                      const checkoutRes = await fetch('/api/create-checkout-session', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ priceId: selectedPlan, userEmail: email }),
+                      });
+                      const checkoutData = await checkoutRes.json();
+                      if (checkoutData.url) {
+                        window.location.href = checkoutData.url;
+                        return;
+                      } else {
+                        setMessage('決済ページの生成に失敗しました。');
+                      }
+                    } else {
+                      router.push('/')
+                    }
+                } else {
+                  setMessage('自動ログインに失敗しました。ログインページから手動でログインしてください。');
+                  setTimeout(() => {
+                    router.push('/login');
+                  }, 2000);
+                }
             } else {
                 setMessage(`エラー: ${data.error}`)
             }
@@ -158,6 +197,26 @@ export default function RegisterPage() {
                             </p>
                         </div>
 
+                        {/* プラン選択 */}
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium text-purple-200">プラン選択</label>
+                            <div className="flex gap-4 mt-1">
+                                {PLAN_OPTIONS.map((plan) => (
+                                    <label key={plan.priceId} className={`px-4 py-2 rounded-full border cursor-pointer transition-all text-base font-medium shadow-sm ${selectedPlan === plan.priceId ? "bg-gradient-to-r from-pink-400 to-purple-400 text-white border-pink-400 shadow-lg" : "bg-white border-gray-300 text-gray-700 hover:bg-pink-100"}`}>
+                                        <input
+                                            type="radio"
+                                            name="plan"
+                                            value={plan.priceId}
+                                            checked={selectedPlan === plan.priceId}
+                                            onChange={() => setSelectedPlan(plan.priceId)}
+                                            className="hidden"
+                                        />
+                                        {plan.label}
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+
                         {/* メッセージ表示 */}
                         {message && (
                             <div className={`rounded-lg p-3 ${
@@ -221,5 +280,13 @@ export default function RegisterPage() {
                 </div>
             </div>
         </div>
+    )
+}
+
+export default function RegisterPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <RegisterForm />
+        </Suspense>
     )
 }
