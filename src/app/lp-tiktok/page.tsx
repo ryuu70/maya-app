@@ -153,14 +153,13 @@ export default function LpTiktokPage() {
                                       <span>{visible}</span>
                                       {hidden && (
                                         <span className="block mt-2">
-                                          <span className="inline-block align-middle w-full text-center select-none" style={{ filter: "blur(6px)", background: "rgba(255,255,255,0.4)", borderRadius: "10px", padding: "16px 10px", boxShadow: "0 4px 32px 0 rgba(80,0,120,0.10)", border: "1.5px solid rgba(180,180,255,0.25)", backdropFilter: "blur(2px)" }}>
-                                            <span className="block text-lg font-semibold text-purple-700 mb-2 flex items-center justify-center gap-2">🔒 <span>有料会員限定</span></span>
-                                            <span className="block text-base font-bold text-pink-600 mb-2">愛情・結婚の続き</span>
-                                            <span className="block text-gray-500 mb-1">ここにはあなたの恋愛・結婚の詳細なアドバイスが隠されています…</span>
-                                            <span className="block text-gray-400 italic">（新規登録またはログインで全ての情報が解放されます）</span>
-                                            <span className="block mt-4 text-2xl text-purple-300/80">•••</span>
-                                            <span className="block mt-4">{hidden}</span>
-                                          </span>
+                                          {/* blurは本文だけ */}
+                                          <span className="inline-block align-middle w-full select-none" style={{ filter: "blur(6px)", background: "rgba(255,255,255,0.4)", borderRadius: "10px", padding: "16px 10px", boxShadow: "0 4px 32px 0 rgba(80,0,120,0.10)", border: "1.5px solid rgba(180,180,255,0.25)", backdropFilter: "blur(2px)" }}>{hidden}</span>
+                                          {/* blur外に文言・ボタンを出す */}
+                                          <span className="block text-lg font-semibold text-purple-700 mt-2 flex items-center justify-center gap-2">🔒 <span>有料会員限定</span></span>
+                                          <span className="block text-base font-bold text-pink-600 mb-2">愛情・結婚の続き</span>
+                                          <span className="block text-gray-500 mb-1">ここにはあなたの恋愛・結婚の詳細なアドバイスが隠されています…</span>
+                                          <span className="block text-gray-400 italic">（新規登録またはログインで全ての情報が解放されます）</span>
                                           <div className="w-full flex justify-center gap-4 mt-3">
                                             <Link href="/register?from=lp-tiktok" className="px-6 py-2 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-pink-600 hover:to-indigo-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-purple-200/30">新規登録</Link>
                                             <Link href="/login?from=lp-tiktok" className="px-6 py-2 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 hover:from-indigo-600 hover:to-pink-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-pink-200/30">ログイン</Link>
