@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { getKinNumber } from "../lib/kin";
 import { getKakeByKin } from "../lib/kake";
-import { useSession } from "next-auth/react";
+// import { useSession } from "next-auth/react";
 
 const questions = [
   { id: 1, text: "氏名", type: "text", placeholder: "例：山田太郎" },
@@ -37,7 +37,7 @@ export default function LpTiktokPage() {
     setResult({ kin, kake, name, gender, birthday, uranaiType });
     setShowResult(true);
   };
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
   return (
     <div>
       <header className="w-full max-w-lg mx-auto pt-8 pb-4 px-4 sm:px-8 bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">

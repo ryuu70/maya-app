@@ -14,7 +14,7 @@ function PricingContent() {
   const PLANS = [
     {
       name: "星読みベーシック",
-      priceId: "price_1RnEInIvcf3ORJfndjVn5Ygy",
+      priceId: "price_1RnMJQIS0HO99XqZjKkNZYuJ",
       price: "¥980/月",
       features: [
         "マヤ暦占い",
@@ -24,7 +24,7 @@ function PricingContent() {
     },
     {
       name: "神託プレミアム",
-      priceId: "price_1RnEJTIvcf3ORJfn37TKjWdM",
+      priceId: "price_1RnMJsIS0HO99XqZbuX54BwO",
       price: "¥2,980/月",
       features: [
         "ベーシックプランの全機能",
