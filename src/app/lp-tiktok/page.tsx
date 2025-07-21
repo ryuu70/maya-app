@@ -42,74 +42,80 @@ export default function LpTiktokPage() {
   const { data: session } = useSession();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 flex flex-col items-center justify-center p-0 sm:p-4">
-      <div className="w-full max-w-lg bg-white/70 rounded-3xl shadow-2xl p-0 sm:p-10 mt-0 sm:mt-12 border border-white/30 backdrop-blur-xl relative overflow-hidden">
-        {/* 上部の神秘的な装飾 */}
-        <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-40 bg-gradient-to-br from-pink-300 via-purple-300 to-indigo-300 opacity-30 rounded-full blur-2xl z-0"></div>
-        <div className="relative z-10">
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 mb-8 drop-shadow-lg tracking-tight">\uD83D\uDD2E TikTok限定！かんたんマヤ診断</h1>
-          {!showResult ? (
-            <form onSubmit={handleDiagnose} className="space-y-8 px-2 sm:px-0">
-              {questions.map((q, idx) => (
-                <div key={q.id} className="flex flex-col gap-2">
-                  <div className="font-semibold text-lg text-purple-700 mb-1 flex items-center gap-2">
-                    <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-pink-400 to-purple-400 rounded-full"></span>
-                    {q.text}
-                  </div>
-                  {q.type === "text" && (
-                    <input
-                      type="text"
-                      placeholder={q.placeholder}
-                      value={answers[idx]}
-                      onChange={e => handleChange(idx, e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-lg bg-white text-black shadow-sm"
-                      required
-                    />
-                  )}
-                  {q.type === "date" && (
-                    <input
-                      type="date"
-                      value={answers[idx]}
-                      onChange={e => handleChange(idx, e.target.value)}
-                      className="w-full px-5 py-3 rounded-xl border border-purple-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-base md:text-lg bg-white text-black shadow-sm min-w-0"
-                      required
-                    />
-                  )}
-                  {q.type === "radio" && (
-                    <div className="flex flex-wrap gap-3 mt-1">
-                      {q.options!.map(opt => (
-                        <label key={opt} className={`px-5 py-2 rounded-full border cursor-pointer transition-all text-base font-medium shadow-sm ${answers[idx] === opt ? "bg-gradient-to-r from-pink-400 to-purple-400 text-white border-pink-400 shadow-lg" : "bg-white border-gray-300 text-gray-700 hover:bg-pink-100"}`}>
-                          <input
-                            type="radio"
-                            name={`q${q.id}`}
-                            value={opt}
-                            checked={answers[idx] === opt}
-                            onChange={() => handleChange(idx, opt)}
-                            className="hidden"
-                          />
-                          {opt}
-                        </label>
-                      ))}
+    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 flex flex-col items-center justify-start p-0 sm:p-4">
+      <header className="w-full max-w-lg mx-auto pt-8 pb-4 px-4 sm:px-8">
+        <h1 className="text-2xl xs:text-3xl sm:text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 mb-6 sm:mb-8 drop-shadow-lg tracking-tight leading-tight">
+          <span role="img" aria-label="crystal-ball">🔮</span> TikTok限定！かんたんマヤ診断
+        </h1>
+      </header>
+      <main className="w-full max-w-lg mx-auto flex-1 flex flex-col justify-start items-center px-2 sm:px-0">
+        <div className="w-full bg-white/80 rounded-3xl shadow-2xl p-4 sm:p-10 mt-0 sm:mt-6 border border-white/30 backdrop-blur-xl relative overflow-hidden">
+          {/* 上部の神秘的な装飾 */}
+          <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-40 bg-gradient-to-br from-pink-300 via-purple-300 to-indigo-300 opacity-30 rounded-full blur-2xl z-0"></div>
+          <div className="relative z-10">
+            {/* h1はheaderに移動済み */}
+            {!showResult ? (
+              <form onSubmit={handleDiagnose} className="space-y-8 px-1 sm:px-0">
+                {questions.map((q, idx) => (
+                  <div key={q.id} className="flex flex-col gap-2">
+                    <div className="font-semibold text-base sm:text-lg text-purple-700 mb-1 flex items-center gap-2">
+                      <span className="inline-block w-1.5 h-6 bg-gradient-to-b from-pink-400 to-purple-400 rounded-full"></span>
+                      {q.text}
                     </div>
-                  )}
-                </div>
-              ))}
-              <button
-                type="submit"
-                className="w-full bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-bold py-4 rounded-2xl mt-8 text-xl shadow-xl hover:scale-105 transition-all tracking-wide border-2 border-white/30 backdrop-blur-md"
-                disabled={answers.some(a => !a)}
-              >
-                診断する
-              </button>
-            </form>
-          ) : (
-            <div className="mt-4 px-2 sm:px-0">
-              <div className="bg-white/90 rounded-2xl p-6 mb-4 shadow-xl border border-purple-100/40 relative overflow-hidden">
-                {/* 結果上部の装飾 */}
-                <div className="absolute -top-8 right-0 w-24 h-24 bg-gradient-to-br from-pink-200 via-purple-200 to-indigo-200 opacity-30 rounded-full blur-2xl z-0"></div>
-                <div className="relative z-10">
-                  <h2 className="text-2xl font-bold text-pink-600 mb-4 text-center drop-shadow">{result?.name}さんの診断結果</h2>
-                  {/* 結果本体 */}
+                    {q.type === "text" && (
+                      <input
+                        type="text"
+                        placeholder={q.placeholder}
+                        value={answers[idx]}
+                        onChange={e => handleChange(idx, e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-base sm:text-lg bg-white text-black shadow-sm"
+                        required
+                      />
+                    )}
+                    {q.type === "date" && (
+                      <input
+                        type="date"
+                        value={answers[idx]}
+                        onChange={e => handleChange(idx, e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-base sm:text-lg bg-white text-black shadow-sm min-w-0"
+                        required
+                      />
+                    )}
+                    {q.type === "radio" && (
+                      <div className="flex flex-wrap gap-3 mt-1">
+                        {q.options!.map(opt => (
+                          <label key={opt} className={`px-5 py-2 rounded-full border cursor-pointer transition-all text-base font-medium shadow-sm ${answers[idx] === opt ? "bg-gradient-to-r from-pink-400 to-purple-400 text-white border-pink-400 shadow-lg" : "bg-white border-gray-300 text-gray-700 hover:bg-pink-100"}`}>
+                            <input
+                              type="radio"
+                              name={`q${q.id}`}
+                              value={opt}
+                              checked={answers[idx] === opt}
+                              onChange={() => handleChange(idx, opt)}
+                              className="hidden"
+                            />
+                            {opt}
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+                <button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-bold py-4 rounded-2xl mt-8 text-lg sm:text-xl shadow-xl hover:scale-105 transition-all tracking-wide border-2 border-white/30 backdrop-blur-md"
+                  disabled={answers.some(a => !a)}
+                >
+                  診断する
+                </button>
+              </form>
+            ) : (
+              <div className="mt-4 px-1 sm:px-0">
+                <div className="bg-white/90 rounded-2xl p-4 sm:p-6 mb-4 shadow-xl border border-purple-100/40 relative overflow-hidden">
+                  {/* 結果上部の装飾 */}
+                  <div className="absolute -top-8 right-0 w-24 h-24 bg-gradient-to-br from-pink-200 via-purple-200 to-indigo-200 opacity-30 rounded-full blur-2xl z-0"></div>
+                  <div className="relative z-10">
+                    <h2 className="text-xl sm:text-2xl font-bold text-pink-600 mb-4 text-center drop-shadow">{result?.name}さんの診断結果</h2>
+                    {/* 結果本体 */}
                   {result && result.kake ? (
                     <div className="space-y-4 text-base">
                       {/* 卦 */}
@@ -225,7 +231,7 @@ export default function LpTiktokPage() {
                 </div>
               </div>
               <button
-                className="w-full mt-8 text-purple-500 underline hover:text-pink-500 font-semibold text-lg tracking-wide"
+                className="w-full mt-8 text-purple-500 underline hover:text-pink-500 font-semibold text-base sm:text-lg tracking-wide"
                 onClick={() => setShowResult(false)}
               >
                 もう一度診断する
@@ -233,7 +239,7 @@ export default function LpTiktokPage() {
             </div>
           )}
         </div>
-      </div>
+      </main>
     </div>
   );
 } 
