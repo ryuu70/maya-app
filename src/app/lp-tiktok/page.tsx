@@ -41,11 +41,6 @@ export default function LpTiktokPage() {
 
   const { data: session } = useSession();
 
-  const PLAN_OPTIONS = [
-    { label: "星読みベーシック", priceId: "price_1RnEInIvcf3ORJfndjVn5Ygy" },
-    { label: "神託プレミアム", priceId: "price_1RnEJTIvcf3ORJfn37TKjWdM" },
-  ];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 flex flex-col items-center justify-center p-0 sm:p-4">
       <div className="w-full max-w-lg bg-white/70 rounded-3xl shadow-2xl p-0 sm:p-10 mt-0 sm:mt-12 border border-white/30 backdrop-blur-xl relative overflow-hidden">

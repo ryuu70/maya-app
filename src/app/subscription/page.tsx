@@ -34,17 +34,7 @@ export default function SubscriptionPage() {
   const [canceling, setCanceling] = useState(false)
   const [message, setMessage] = useState("")
 
-  useEffect(() => {
-    if (status === "loading") return
-
-    if (!session?.user?.email) {
-      setLoading(false)
-      return
-    }
-
-    fetchSubscriptionInfo()
-  }, [session, status])
-
+  // fetchSubscriptionInfoの定義をuseEffectより前に移動
   const fetchSubscriptionInfo = async () => {
     try {
       setLoading(true)
@@ -62,6 +52,21 @@ export default function SubscriptionPage() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    if (status === "loading") return
+
+    if (!session?.user?.email) {
+      setLoading(false)
+      return
+    }
+
+    fetchSubscriptionInfo()
+  }, [session, status])
+
+  useEffect(() => {
+    fetchSubscriptionInfo();
+  }, [fetchSubscriptionInfo]);
 
   const handleCancelSubscription = async () => {
     if (!confirm("本当にサブスクリプションをキャンセルしますか？\n\n現在の期間終了までサービスをご利用いただけます。")) {

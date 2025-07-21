@@ -15,7 +15,7 @@ function PricingContent() {
     {
       name: "星読みベーシック",
       priceId: "price_1RnEInIvcf3ORJfndjVn5Ygy",
-      price: "¥660/月",
+      price: "¥980/月",
       features: [
         "マヤ暦占い",
         "タロット占い",
@@ -27,7 +27,7 @@ function PricingContent() {
     {
       name: "神託プレミアム",
       priceId: "price_1RnEJTIvcf3ORJfn37TKjWdM",
-      price: "¥3,300/月",
+      price: "¥2,980/月",
       features: [
         "ベーシックプランの全機能",
         "無制限の占い回数",
