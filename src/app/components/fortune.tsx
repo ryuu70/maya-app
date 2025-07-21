@@ -1,7 +1,7 @@
 'use client'
 
 import { useSearchParams, useRouter } from 'next/navigation'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import {
     getKinNumber,
     getWaveNumber,
@@ -10,6 +10,7 @@ import {
 } from '@/app/lib/kin'
 import { getEkiDetail, getEkiDiscDetail, getWaveDetail } from '@/app/lib/eki'
 import { getKakeByKin } from '@/app/lib/kake'
+import { useSession } from 'next-auth/react'
 
 function formatJapaneseDate(dateStr: string): string {
     const date = new Date(dateStr)
@@ -44,6 +45,8 @@ function renderWithBlur(text: string, showButton = false) {
 }
 
 export default function Fortune({ birthday, name }: { birthday: string; name: string }) {
+    const { data: session } = useSession();
+    const [isPaid, setIsPaid] = useState<boolean | null>(null);
     const router = useRouter()
     const searchParams = useSearchParams()
     const [age, setAge] = useState<number>(Number(searchParams.get('age') ?? 0))
@@ -92,6 +95,20 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
             targetDate
         }
     }, [birthday, age])
+
+    // サブスクリプション状態取得
+    useEffect(() => {
+      async function fetchSubscription() {
+        if (!session?.user) return;
+        const email = session.user.email;
+        // idは型定義上存在しない場合があるため、emailのみでAPIを呼ぶ
+        if (!email) return;
+        const res = await fetch(`/api/subscriptions/status?email=${encodeURIComponent(email)}`);
+        const data = await res.json();
+        setIsPaid(!!data?.user?.isPaid);
+      }
+      fetchSubscription();
+    }, [session]);
 
     // エラー状態の処理
     if (fortuneData === null) {
@@ -290,7 +307,7 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">概要</span>
-                            <p className="text-sm leading-relaxed">{ekiDetail.概要 || '情報なし'}</p>
+                            <p className="text-sm leading-relaxed">{isPaid ? (ekiDetail.概要 || '情報なし') : renderWithBlur(ekiDetail.概要 || '情報なし', true)}</p>
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">ワンポイント</span>
@@ -383,9 +400,7 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
                     <div className="grid grid-cols-1 gap-4 text-gray-700 text-sm">
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">波動数の説明</span>
-                            <p className="text-sm leading-relaxed whitespace-pre-line">
-                                {waveDetail.説明 || '情報なし'}
-                            </p>
+                            <p className="text-sm leading-relaxed whitespace-pre-line">{isPaid ? (waveDetail.説明 || '情報なし') : renderWithBlur(waveDetail.説明 || '情報なし', true)}</p>
                         </div>
                     </div>
                 </div>
@@ -417,7 +432,7 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">概要</span>
-                            <p className="text-sm leading-relaxed">{mirrorDetail.概要 || '情報なし'}</p>
+                            <p className="text-sm leading-relaxed">{isPaid ? (mirrorDetail.概要 || '情報なし') : renderWithBlur(mirrorDetail.概要 || '情報なし', true)}</p>
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">ワンポイント</span>
@@ -460,7 +475,7 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">概要</span>
-                            <p className="text-sm leading-relaxed">{oppositeDetail.概要 || '情報なし'}</p>
+                            <p className="text-sm leading-relaxed">{isPaid ? (oppositeDetail.概要 || '情報なし') : renderWithBlur(oppositeDetail.概要 || '情報なし', true)}</p>
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">ワンポイント</span>

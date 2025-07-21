@@ -11,11 +11,11 @@ function PricingContent() {
   const searchParams = useSearchParams()
   const isCanceled = searchParams.get("canceled") === "true"
 
-  const plans = [
+  const PLANS = [
     {
-      name: "ベーシック",
+      name: "星読みベーシック",
+      priceId: "price_1RnEInIvcf3ORJfndjVn5Ygy",
       price: "¥660/月",
-      priceId: "price_1RmpUEIvcf3ORJfnX9K6OVBB", // 実際のPrice IDに置き換えてください
       features: [
         "マヤ暦占い",
         "タロット占い",
@@ -25,9 +25,9 @@ function PricingContent() {
       popular: false
     },
     {
-      name: "プレミアム",
+      name: "神託プレミアム",
+      priceId: "price_1RnEJTIvcf3ORJfn37TKjWdM",
       price: "¥3,300/月",
-      priceId: "price_1RmpV3Ivcf3ORJfnZkp4viip", // 実際のPrice IDに置き換えてください
       features: [
         "ベーシックプランの全機能",
         "無制限の占い回数",
@@ -90,7 +90,7 @@ function PricingContent() {
 
         {/* プランカード */}
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {plans.map((plan) => (
+          {PLANS.map((plan) => (
             <div
               key={plan.name}
               className={`relative bg-white rounded-2xl shadow-xl p-8 ${

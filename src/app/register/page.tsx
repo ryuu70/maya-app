@@ -19,8 +19,8 @@ function RegisterForm() {
     const [isLoading, setIsLoading] = useState(false)
 
     const PLAN_OPTIONS = [
-      { label: "星読みベーシック", priceId: "price_1RmpUEIvcf3ORJfnX9K6OVBB" },
-      { label: "神託プレミアム", priceId: "price_1RmpV3Ivcf3ORJfnZkp4viip" },
+      { label: "星読みベーシック", priceId: "price_1RnEInIvcf3ORJfndjVn5Ygy" },
+      { label: "神託プレミアム", priceId: "price_1RnEJTIvcf3ORJfn37TKjWdM" },
     ];
     const [selectedPlan, setSelectedPlan] = useState(PLAN_OPTIONS[0].priceId);
 
