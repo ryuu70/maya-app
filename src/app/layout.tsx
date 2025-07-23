@@ -22,6 +22,13 @@ export default function RootLayout({
         <SessionProviderWrapper>
           <Header />
           <main className="flex-grow">{children}</main>
+          {/* --- A8.net広告バナー --- */}
+          <div className="flex justify-center my-4">
+            <a href="https://px.a8.net/svt/ejp?a8mat=459VF6+DW45P6+2PEO+C5GGH" rel="nofollow">
+              <img style={{border:0}} width="1456" height="180" alt="" src="https://www25.a8.net/svt/bgt?aid=250723410840&wid=002&eno=01&mid=s00000012624002041000&mc=1" />
+            </a>
+            <img style={{border:0}} width="1" height="1" src="https://www11.a8.net/0.gif?a8mat=459VF6+DW45P6+2PEO+C5GGH" alt="" />
+          </div>
           <Footer />
         </SessionProviderWrapper>
       </body>
