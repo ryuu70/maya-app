@@ -17,25 +17,29 @@ export default function CheckoutButton({ className }: CheckoutButtonProps) {
       console.warn("Pay.jp公開鍵が設定されていません。NEXT_PUBLIC_PAYJP_PUBLIC_KEYを環境変数で指定してください。");
       return;
     }
-    if (formRef.current.querySelector("#payjp-checkout-script")) return;
+    // scriptをbody直下に一度だけ追加
+    if (!document.getElementById("payjp-checkout-script")) {
+      const script = document.createElement("script");
+      script.src = "https://checkout.pay.jp/";
+      script.className = "payjp-button";
+      script.setAttribute("data-key", publicKey);
+      script.setAttribute("data-partial", "true");
+      script.id = "payjp-checkout-script";
+      document.body.appendChild(script);
+    }
+    // formにpayjp-buttonクラスを付与（Pay.jp scriptがボタンを生成するため）
+    formRef.current.classList.add("payjp-button");
 
-    const script = document.createElement("script");
-    script.src = "https://checkout.pay.jp/";
-    script.className = "payjp-button";
-    script.setAttribute("data-key", publicKey);
-    script.setAttribute("data-partial", "true");
-    script.id = "payjp-checkout-script";
-    formRef.current.appendChild(script);
-
+    // documentでイベント監視
     const handler = function (e: any) {
       setToken(e.detail.token);
       console.log("Payjp token created:", e.detail.token);
     };
-    window.addEventListener("payjp_token_created", handler);
+    document.addEventListener("payjp_token_created", handler);
     return () => {
-      window.removeEventListener("payjp_token_created", handler);
+      document.removeEventListener("payjp_token_created", handler);
     };
-  }, []); // 依存配列を空にして初回のみ実行
+  }, []);
 
   const handlePay = async () => {
     if (!token) return;
