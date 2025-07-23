@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import type PayjpJs from "typedef-payjp-js";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 declare global {
   interface Window {
@@ -12,6 +13,14 @@ declare global {
 }
 
 export default function CheckoutPage() {
+  return (
+    <Suspense>
+      <CheckoutPageContent />
+    </Suspense>
+  );
+}
+
+function CheckoutPageContent() {
   const [payjp, setPayjp] = useState<PayjpJs.Payjp | null>(null);
 
   const numberRef = useRef<PayjpJs.PayjpElement | null>(null);
