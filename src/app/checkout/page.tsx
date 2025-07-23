@@ -102,7 +102,7 @@ function CheckoutPageContent() {
         const res = await fetch("/api/pay", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token: result.id }),
+          body: JSON.stringify({ token: result.id, plan }),
         });
         const data = await res.json();
         if (data.success) {
