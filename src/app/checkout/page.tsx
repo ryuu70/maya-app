@@ -6,34 +6,42 @@ import type PayjpJs from "typedef-payjp-js";
 declare global {
   interface Window {
     Payjp?: (key: string) => PayjpJs.Payjp;
-    __payjpInstance__?: PayjpJs.Payjp; // グローバルにインスタンス保持
+    __payjpInstance__?: PayjpJs.Payjp;
   }
 }
 
 export default function CheckoutPage() {
   const [payjp, setPayjp] = useState<PayjpJs.Payjp | null>(null);
-  const [ready, setReady] = useState(false);
 
   const numberRef = useRef<PayjpJs.PayjpElement | null>(null);
   const expiryRef = useRef<PayjpJs.PayjpElement | null>(null);
   const cvcRef = useRef<PayjpJs.PayjpElement | null>(null);
 
-  // Payjpインスタンスを1回だけ作る
+  // pay.jsのscriptを公式CDNから読み込む
   useEffect(() => {
-    if (typeof window === "undefined" || !window.Payjp) return;
+    if (typeof window === "undefined") return;
+    if (window.Payjp) return; // すでに読み込み済みなら何もしない
 
-    if (!window.__payjpInstance__) {
+    const script = document.createElement("script");
+    script.src = "https://js.pay.jp/v2/pay.js";
+    script.async = true;
+    script.onload = () => {
+      // 読み込み完了後にPayjpインスタンスを作成
       const publicKey = process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY || "";
-      window.__payjpInstance__ = window.Payjp(publicKey);
-    }
+      window.__payjpInstance__ = window.Payjp!(publicKey);
+      setPayjp(window.__payjpInstance__!);
+    };
+    document.body.appendChild(script);
 
-    setPayjp(window.__payjpInstance__!);
-    setReady(true);
+    // クリーンアップ
+    return () => {
+      script.remove();
+    };
   }, []);
 
-  // カード要素を1回だけmountする
+  // Payjpインスタンスができたらカード要素をmount
   useEffect(() => {
-    if (!payjp || !ready) return;
+    if (!payjp) return;
 
     const elements = payjp.elements();
 
@@ -63,7 +71,7 @@ export default function CheckoutPage() {
       expiryRef.current = null;
       cvcRef.current = null;
     };
-  }, [payjp, ready]);
+  }, [payjp]);
 
   const getToken = async () => {
     if (!payjp || !numberRef.current) {
