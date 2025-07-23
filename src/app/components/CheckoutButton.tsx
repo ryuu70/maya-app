@@ -8,6 +8,7 @@ interface CheckoutButtonProps {
 export default function CheckoutButton({ className }: CheckoutButtonProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [loading, setLoading] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
   const publicKey = process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY || "";
 
   useEffect(() => {
@@ -26,27 +27,31 @@ export default function CheckoutButton({ className }: CheckoutButtonProps) {
     script.id = "payjp-checkout-script";
     formRef.current.appendChild(script);
 
-    const handler = async function (e: any) {
-      setLoading(true);
-      const token = e.detail.token;
-      const res = await fetch("/api/pay", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
-      });
-      const data = await res.json();
-      setLoading(false);
-      if (data.success) {
-        window.location.href = "/thanks";
-      } else {
-        alert("決済に失敗しました: " + (data.message || ""));
-      }
+    const handler = function (e: any) {
+      setToken(e.detail.token);
     };
     window.addEventListener("payjp_token_created", handler);
     return () => {
       window.removeEventListener("payjp_token_created", handler);
     };
   }, [publicKey]);
+
+  const handlePay = async () => {
+    if (!token) return;
+    setLoading(true);
+    const res = await fetch("/api/pay", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token }),
+    });
+    const data = await res.json();
+    setLoading(false);
+    if (data.success) {
+      window.location.href = "/thanks";
+    } else {
+      alert("決済に失敗しました: " + (data.message || ""));
+    }
+  };
 
   if (!publicKey) {
     return <div style={{color: 'red', fontWeight: 700}}>Pay.jp公開鍵が設定されていません。管理者にご連絡ください。</div>;
@@ -56,6 +61,11 @@ export default function CheckoutButton({ className }: CheckoutButtonProps) {
     <form ref={formRef} action="#" method="POST" className={className} onSubmit={e => e.preventDefault()}>
       {loading && <div>決済処理中...</div>}
       {/* Pay.jpボタンはscriptで動的に挿入 */}
+      {token && !loading && (
+        <button type="button" onClick={handlePay} style={{marginTop: 16, background: '#6366f1', color: '#fff', padding: '10px 32px', border: 'none', borderRadius: 4, fontWeight: 700, fontSize: 16}}>
+          決済する
+        </button>
+      )}
     </form>
   );
 } 
