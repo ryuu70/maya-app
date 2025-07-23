@@ -2,7 +2,7 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn } from 'next-auth/react';
@@ -17,56 +17,61 @@ function RegisterForm() {
     const [birthday, setBirthday] = useState('')
     const [message, setMessage] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+    const [showAdModal, setShowAdModal] = useState(false);
 
-    const PLAN_OPTIONS = [
-      { label: "星読みベーシック", priceId: "price_1RnMJQIS0HO99XqZjKkNZYuJ" },
-      { label: "神託プレミアム", priceId: "price_1RnMJsIS0HO99XqZbuX54BwO" },
+    const adBanners = [
+      {
+        href: "https://px.a8.net/svt/ejp?a8mat=459VF6+DW45P6+2PEO+C5GGH",
+        img: { src: "https://www21.a8.net/svt/bgt?aid=250723410840&wid=002&eno=01&mid=s00000012624002041000&mc=1", width: 1456, height: 180 },
+        pixel: "https://www15.a8.net/0.gif?a8mat=459VF6+DW45P6+2PEO+C5GGH"
+      },
+      {
+        href: "https://px.a8.net/svt/ejp?a8mat=459VF6+DW45P6+2PEO+C4DVL",
+        img: { src: "https://www27.a8.net/svt/bgt?aid=250723410840&wid=002&eno=01&mid=s00000012624002036000&mc=1", width: 300, height: 250 },
+        pixel: "https://www17.a8.net/0.gif?a8mat=459VF6+DW45P6+2PEO+C4DVL"
+      },
+      {
+        href: "https://px.a8.net/svt/ejp?a8mat=459VF6+DW45P6+2PEO+C510X",
+        img: { src: "https://www20.a8.net/svt/bgt?aid=250723410840&wid=002&eno=01&mid=s00000012624002039000&mc=1", width: 600, height: 500 },
+        pixel: "https://www18.a8.net/0.gif?a8mat=459VF6+DW45P6+2PEO+C510X"
+      },
+      {
+        href: "https://px.a8.net/svt/ejp?a8mat=459VF6+E80TSQ+4PWE+BXIYP",
+        img: { src: "https://www22.a8.net/svt/bgt?aid=250723410860&wid=002&eno=01&mid=s00000022019002004000&mc=1", width: 468, height: 60 },
+        pixel: "https://www17.a8.net/0.gif?a8mat=459VF6+E80TSQ+4PWE+BXIYP"
+      },
+      {
+        href: "https://px.a8.net/svt/ejp?a8mat=459VF6+E80TSQ+4PWE+BYLJL",
+        img: { src: "https://www29.a8.net/svt/bgt?aid=250723410860&wid=002&eno=01&mid=s00000022019002009000&mc=1", width: 300, height: 250 },
+        pixel: "https://www17.a8.net/0.gif?a8mat=459VF6+E80TSQ+4PWE+BYLJL"
+      },
     ];
-    const [selectedPlan, setSelectedPlan] = useState(PLAN_OPTIONS[0].priceId);
-
-    const isFromLpTiktok = searchParams.get('from') === 'lp-tiktok';
+    const randomAd = useRef(adBanners[Math.floor(Math.random() * adBanners.length)]);
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setIsLoading(true)
-        setMessage('')
-
+        e.preventDefault();
+        setShowAdModal(true);
+    };
+    const handleAdCloseAndRegister = async () => {
+        setShowAdModal(false);
+        setIsLoading(true);
+        setMessage('');
         try {
             const res = await fetch('/api/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, email, password, birthday }),
             })
-
             const data = await res.json()
-            
             if (data.success) {
                 setMessage('登録が完了しました！自動的にログインします...')
-                // 自動ログイン
                 const loginResult = await signIn('credentials', {
                   redirect: false,
                   email,
                   password,
                 });
                 if (loginResult && !loginResult.error) {
-                    // TikTok診断ページから来た場合はStripe Checkoutへ遷移
-                    if (isFromLpTiktok) {
-                      setMessage('プラン決済ページに移動します...')
-                      const checkoutRes = await fetch('/api/create-checkout-session', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ priceId: selectedPlan, userEmail: email }),
-                      });
-                      const checkoutData = await checkoutRes.json();
-                      if (checkoutData.url) {
-                        window.location.href = checkoutData.url;
-                        return;
-                      } else {
-                        setMessage('決済ページの生成に失敗しました。');
-                      }
-                    } else {
-                      router.push('/')
-                    }
+                  router.push('/')
                 } else {
                   setMessage('自動ログインに失敗しました。ログインページから手動でログインしてください。');
                   setTimeout(() => {
@@ -79,9 +84,8 @@ function RegisterForm() {
         } catch {
             setMessage('登録中にエラーが発生しました。もう一度お試しください。')
         }
-        
-        setIsLoading(false)
-    }
+        setIsLoading(false);
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-2 sm:p-4">
@@ -198,24 +202,6 @@ function RegisterForm() {
                         </div>
 
                         {/* プラン選択 */}
-                        <div className="space-y-2">
-                            <label className="block text-sm font-medium text-purple-200">プラン選択</label>
-                            <div className="flex gap-4 mt-1">
-                                {PLAN_OPTIONS.map((plan) => (
-                                    <label key={plan.priceId} className={`px-4 py-2 rounded-full border cursor-pointer transition-all text-base font-medium shadow-sm ${selectedPlan === plan.priceId ? "bg-gradient-to-r from-pink-400 to-purple-400 text-white border-pink-400 shadow-lg" : "bg-white border-gray-300 text-gray-700 hover:bg-pink-100"}`}>
-                                        <input
-                                            type="radio"
-                                            name="plan"
-                                            value={plan.priceId}
-                                            checked={selectedPlan === plan.priceId}
-                                            onChange={() => setSelectedPlan(plan.priceId)}
-                                            className="hidden"
-                                        />
-                                        {plan.label}
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
 
                         {/* メッセージ表示 */}
                         {message && (
@@ -279,6 +265,20 @@ function RegisterForm() {
                     </p>
                 </div>
             </div>
+
+                {/* 広告モーダル */}
+                {showAdModal && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+                    <div className="bg-white rounded-lg shadow-lg p-4 relative flex flex-col items-center">
+                      <button onClick={handleAdCloseAndRegister} className="absolute top-2 right-2 text-gray-500 hover:text-black text-2xl font-bold">×</button>
+                      <a href={randomAd.current.href} rel="nofollow">
+                        <img style={{border:0}} width={randomAd.current.img.width} height={randomAd.current.img.height} alt="" src={randomAd.current.img.src} />
+                      </a>
+                      <img style={{border:0}} width="1" height="1" src={randomAd.current.pixel} alt="" />
+                      <div className="mt-2 text-center text-sm text-gray-600">広告を閉じると登録が完了します</div>
+                    </div>
+                  </div>
+                )}
         </div>
     )
 }
