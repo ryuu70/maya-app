@@ -35,7 +35,7 @@ export default function CheckoutButton({ className }: CheckoutButtonProps) {
     return () => {
       window.removeEventListener("payjp_token_created", handler);
     };
-  }, [publicKey]);
+  }, []); // 依存配列を空にして初回のみ実行
 
   const handlePay = async () => {
     if (!token) return;
@@ -64,27 +64,27 @@ export default function CheckoutButton({ className }: CheckoutButtonProps) {
         {loading && <div>決済処理中...</div>}
         {/* Pay.jpボタンはscriptで動的に挿入 */}
       </form>
-      {/* tokenの値を画面に表示 */}
-      {token && <div style={{marginTop: 8, color: '#333', fontSize: 12}}>トークン: {token}</div>}
-      {/* 決済ボタンはtoken !== null なら必ず表示 */}
-      {token !== null && !loading && (
-        <button
-          type="button"
-          onClick={handlePay}
-          style={{
-            marginTop: 16,
-            background: '#6366f1',
-            color: '#fff',
-            padding: '10px 32px',
-            border: 'none',
-            borderRadius: 4,
-            fontWeight: 700,
-            fontSize: 16
-          }}
-        >
-          決済する
-        </button>
-      )}
+      {/* tokenの値を画面に必ず表示 */}
+      <div style={{marginTop: 8, color: '#333', fontSize: 12}}>トークン: {token ?? '(未取得)'}</div>
+      {/* 決済ボタンは常に表示し、tokenがなければdisabled */}
+      <button
+        type="button"
+        onClick={handlePay}
+        disabled={!token || loading}
+        style={{
+          marginTop: 16,
+          background: !token ? '#ccc' : '#6366f1',
+          color: '#fff',
+          padding: '10px 32px',
+          border: 'none',
+          borderRadius: 4,
+          fontWeight: 700,
+          fontSize: 16,
+          cursor: !token ? 'not-allowed' : 'pointer'
+        }}
+      >
+        決済する
+      </button>
     </div>
   );
 } 
