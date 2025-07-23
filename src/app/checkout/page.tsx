@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import type PayjpJs from "typedef-payjp-js";
+import { useSearchParams } from "next/navigation";
 
 declare global {
   interface Window {
@@ -16,6 +17,9 @@ export default function CheckoutPage() {
   const numberRef = useRef<PayjpJs.PayjpElement | null>(null);
   const expiryRef = useRef<PayjpJs.PayjpElement | null>(null);
   const cvcRef = useRef<PayjpJs.PayjpElement | null>(null);
+
+  const searchParams = useSearchParams();
+  const plan = searchParams.get("plan");
 
   // pay.jsのscriptを公式CDNから読み込む
   useEffect(() => {
@@ -105,20 +109,25 @@ export default function CheckoutPage() {
 
   return (
     <div className="max-w-md mx-auto p-4 bg-white rounded-lg shadow">
-      <h2 className="text-xl font-bold mb-4">お支払い情報</h2>
+      <h2 className="text-xl font-bold text-black mb-4">お支払い情報</h2>
+      {plan && (
+        <div className="mb-4 p-2 bg-blue-50 border border-blue-200 rounded text-blue-800 text-center font-semibold">
+          選択中のプラン: {plan === "premium" ? "神託プレミアム" : "星読みベーシック"}
+        </div>
+      )}
 
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">カード番号</label>
+        <label className="block text-sm text-black font-medium mb-1">カード番号</label>
         <div id="number-form" className="p-3 border rounded bg-gray-50" />
       </div>
 
       <div className="flex gap-4 mb-4">
         <div className="flex-1">
-          <label className="block text-sm font-medium mb-1">有効期限</label>
+          <label className="block text-sm text-black font-medium mb-1">有効期限</label>
           <div id="expiry-form" className="p-3 border rounded bg-gray-50" />
         </div>
         <div className="flex-1">
-          <label className="block text-sm font-medium mb-1">セキュリティコード</label>
+          <label className="block text-sm text-black font-medium mb-1">セキュリティコード</label>
           <div id="cvc-form" className="p-3 border rounded bg-gray-50" />
         </div>
       </div>

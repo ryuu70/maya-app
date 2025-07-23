@@ -137,7 +137,12 @@ function PricingContent() {
 
               <div className="text-center">
                 {session?.user ? (
-                  <CheckoutButton />
+                  <Link
+                    href={`/checkout?plan=${plan.popular ? "premium" : "basic"}`}
+                    className="block w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg shadow-lg hover:from-purple-700 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 text-center"
+                  >
+                    {plan.name}で申し込む
+                  </Link>
                 ) : (
                   <Link
                     href="/login"
