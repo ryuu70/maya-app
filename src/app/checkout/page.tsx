@@ -83,8 +83,23 @@ export default function CheckoutPage() {
     if (result.error) {
       alert(`エラー: ${result.error.message}`);
     } else {
+      // サーバーへの送信処理
       alert(`Token取得成功: ${result.id}`);
-      // サーバーへの送信処理はここで書く
+      try {
+        const res = await fetch("/api/pay", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token: result.id }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert("決済完了: " + data.message);
+        } else {
+          alert("決済エラー: " + data.message);
+        }
+      } catch (e: any) {
+        alert("通信エラー: " + (e?.message || e));
+      }
     }
   };
 
