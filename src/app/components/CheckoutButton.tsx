@@ -16,16 +16,16 @@ export default function CheckoutButton({ className }: CheckoutButtonProps) {
     const script = document.createElement("script");
     script.src = "https://checkout.pay.jp/";
     script.className = "payjp-button";
-    script.setAttribute("data-key", "pk_test_2f2f3b02a54604f9c3aa1c1b");
+    // 公開鍵は環境変数から注入（Next.jsのpublicRuntimeConfigやprocess.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEYなどを利用）
+    script.setAttribute("data-key", process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY || "");
     script.setAttribute("data-partial", "true");
     script.id = "payjp-checkout-script";
     formRef.current.appendChild(script);
 
-    // Pay.jpのトークン生成イベントを監視
-    window.addEventListener("payjp_token_created", async function (e: any) {
+    // ハンドラを定義
+    const handler = async function (e: any) {
       setLoading(true);
       const token = e.detail.token;
-      // fetchでAPIにトークンを送信
       const res = await fetch("/api/pay", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -38,7 +38,12 @@ export default function CheckoutButton({ className }: CheckoutButtonProps) {
       } else {
         alert("決済に失敗しました: " + (data.message || ""));
       }
-    });
+    };
+    window.addEventListener("payjp_token_created", handler);
+    // クリーンアップ
+    return () => {
+      window.removeEventListener("payjp_token_created", handler);
+    };
   }, []);
 
   return (
