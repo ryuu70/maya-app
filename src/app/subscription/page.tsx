@@ -1,7 +1,7 @@
 "use client"
 
 import { useSession } from "next-auth/react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 
 interface SubscriptionData {
@@ -35,7 +35,7 @@ export default function SubscriptionPage() {
   const [message, setMessage] = useState("")
 
   // fetchSubscriptionInfoの定義をuseEffectより前に移動
-  const fetchSubscriptionInfo = async () => {
+  const fetchSubscriptionInfo = useCallback(async () => {
     try {
       setLoading(true)
       const response = await fetch(`/api/subscriptions/status?email=${session?.user?.email}`)
@@ -51,7 +51,7 @@ export default function SubscriptionPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [session?.user?.email])
 
   useEffect(() => {
     if (status === "loading") return
@@ -62,7 +62,7 @@ export default function SubscriptionPage() {
     }
 
     fetchSubscriptionInfo()
-  }, [session, status])
+  }, [session, status, fetchSubscriptionInfo])
 
   const handleCancelSubscription = async () => {
     if (!confirm("本当にサブスクリプションをキャンセルしますか？\n\n現在の期間終了までサービスをご利用いただけます。")) {
