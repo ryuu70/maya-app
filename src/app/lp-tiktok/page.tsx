@@ -24,6 +24,8 @@ export default function LpTiktokPage() {
     birthday: string;
     uranaiType: string;
   }>(null);
+  const [showAdModal, setShowAdModal] = useState(false);
+
   const handleChange = (qIdx: number, value: string) => {
     const newAnswers = [...answers];
     newAnswers[qIdx] = value;
@@ -31,6 +33,11 @@ export default function LpTiktokPage() {
   };
   const handleDiagnose = (e: React.FormEvent) => {
     e.preventDefault();
+    setShowAdModal(true);
+  };
+  const handleAdClose = () => {
+    // 広告モーダルを閉じて診断結果を表示
+    setShowAdModal(false);
     const [name, gender, birthday, uranaiType] = answers;
     const kin = getKinNumber(birthday);
     const kake = kin ? getKakeByKin(kin) : null;
@@ -46,6 +53,19 @@ export default function LpTiktokPage() {
         </h1>
       </header>
       <main className="min-h-screen w-full flex-1 flex flex-col items-center justify-start px-2 sm:px-0">
+        {/* 広告モーダル */}
+        {showAdModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+            <div className="bg-white rounded-lg shadow-lg p-4 relative flex flex-col items-center">
+              <button onClick={handleAdClose} className="absolute top-2 right-2 text-gray-500 hover:text-black text-2xl font-bold">×</button>
+              <a href="https://px.a8.net/svt/ejp?a8mat=459VF6+DW45P6+2PEO+C4DVL" rel="nofollow">
+                <img style={{border:0}} width="300" height="250" alt="" src="https://www27.a8.net/svt/bgt?aid=250723410840&wid=002&eno=01&mid=s00000012624002036000&mc=1" />
+              </a>
+              <img style={{border:0}} width="1" height="1" src="https://www17.a8.net/0.gif?a8mat=459VF6+DW45P6+2PEO+C4DVL" alt="" />
+              <div className="mt-2 text-center text-sm text-gray-600">広告を閉じると診断結果が表示されます</div>
+            </div>
+          </div>
+        )}
         <div className="w-full max-w-lg md:max-w-2xl lg:max-w-3xl bg-white/80 rounded-3xl shadow-2xl p-4 sm:p-10 md:p-12 lg:p-16 mt-0 sm:mt-6 border border-white/30 backdrop-blur-xl relative overflow-hidden mx-auto">
         <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-40 bg-gradient-to-br from-pink-300 via-purple-300 to-indigo-300 opacity-30 rounded-full blur-2xl z-0"></div>
         <div className="relative z-10">
