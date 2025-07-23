@@ -137,9 +137,7 @@ function PricingContent() {
 
               <div className="text-center">
                 {session?.user ? (
-                  <CheckoutButton
-                    className="w-full"
-                  />
+                  <CheckoutButton />
                 ) : (
                   <Link
                     href="/login"
