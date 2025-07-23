@@ -3,7 +3,6 @@
 import { useSession } from "next-auth/react"
 import { useSearchParams } from "next/navigation"
 import { Suspense } from "react"
-import CheckoutButton from "@/app/components/CheckoutButton"
 import Link from "next/link"
 
 function PricingContent() {
