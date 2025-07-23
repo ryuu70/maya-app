@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+:root {
+  --background: #252525;
+  --foreground: #ffffff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #252525;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ヘッダーとのマージン調整 */
+main {
+  padding-top: 5rem; /* 80px */
+}
+
+@media (min-width: 1024px) {
+  main {
+    padding-top: 6rem; /* 96px */
+  }
+}
