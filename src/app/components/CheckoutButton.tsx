@@ -29,6 +29,7 @@ export default function CheckoutButton({ className }: CheckoutButtonProps) {
 
     const handler = function (e: any) {
       setToken(e.detail.token);
+      console.log("Payjp token created:", e.detail.token);
     };
     window.addEventListener("payjp_token_created", handler);
     return () => {
@@ -63,8 +64,10 @@ export default function CheckoutButton({ className }: CheckoutButtonProps) {
         {loading && <div>決済処理中...</div>}
         {/* Pay.jpボタンはscriptで動的に挿入 */}
       </form>
-      {/* 決済ボタンはフォーム外に出す */}
-      {token && !loading && (
+      {/* tokenの値を画面に表示 */}
+      {token && <div style={{marginTop: 8, color: '#333', fontSize: 12}}>トークン: {token}</div>}
+      {/* 決済ボタンはtoken !== null なら必ず表示 */}
+      {token !== null && !loading && (
         <button
           type="button"
           onClick={handlePay}
