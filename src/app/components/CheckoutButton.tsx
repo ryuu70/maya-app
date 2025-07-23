@@ -58,14 +58,30 @@ export default function CheckoutButton({ className }: CheckoutButtonProps) {
   }
 
   return (
-    <form ref={formRef} action="#" method="POST" className={className} onSubmit={e => e.preventDefault()}>
-      {loading && <div>決済処理中...</div>}
-      {/* Pay.jpボタンはscriptで動的に挿入 */}
+    <div>
+      <form ref={formRef} action="#" method="POST" className={className} onSubmit={e => e.preventDefault()}>
+        {loading && <div>決済処理中...</div>}
+        {/* Pay.jpボタンはscriptで動的に挿入 */}
+      </form>
+      {/* 決済ボタンはフォーム外に出す */}
       {token && !loading && (
-        <button type="button" onClick={handlePay} style={{marginTop: 16, background: '#6366f1', color: '#fff', padding: '10px 32px', border: 'none', borderRadius: 4, fontWeight: 700, fontSize: 16}}>
+        <button
+          type="button"
+          onClick={handlePay}
+          style={{
+            marginTop: 16,
+            background: '#6366f1',
+            color: '#fff',
+            padding: '10px 32px',
+            border: 'none',
+            borderRadius: 4,
+            fontWeight: 700,
+            fontSize: 16
+          }}
+        >
           決済する
         </button>
       )}
-    </form>
+    </div>
   );
 } 
