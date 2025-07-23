@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { getKinNumber } from "../lib/kin";
 import { getKakeByKin } from "../lib/kake";
-// import { useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 const questions = [
   { id: 1, text: "氏名", type: "text", placeholder: "例：山田太郎" },
@@ -25,6 +25,8 @@ export default function LpTiktokPage() {
     uranaiType: string;
   }>(null);
   const [showAdModal, setShowAdModal] = useState(false);
+  const [isAdViewed, setIsAdViewed] = useState(false);
+  const { data: session } = useSession();
 
   const handleChange = (qIdx: number, value: string) => {
     const newAnswers = [...answers];
@@ -36,15 +38,14 @@ export default function LpTiktokPage() {
     setShowAdModal(true);
   };
   const handleAdClose = () => {
-    // 広告モーダルを閉じて診断結果を表示
     setShowAdModal(false);
+    setIsAdViewed(true);
     const [name, gender, birthday, uranaiType] = answers;
     const kin = getKinNumber(birthday);
     const kake = kin ? getKakeByKin(kin) : null;
     setResult({ kin, kake, name, gender, birthday, uranaiType });
     setShowResult(true);
   };
-  // const { data: session } = useSession();
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 flex flex-col items-center justify-start p-0 sm:p-4">
       <header className="w-full max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto pt-8 pb-4 px-4 sm:px-8 md:px-12 lg:px-16">
@@ -168,13 +169,19 @@ export default function LpTiktokPage() {
                         const sentences = text.match(/[^。！？!?\n]+[。！？!?]?/g) || [text];
                         const visible = sentences.slice(0, 2).join("");
                         const hidden = sentences.slice(2).join("");
+                        const canViewDetail = isAdViewed || !!session;
                         return (
                                 <>
                                   <span>{visible}</span>
                                   {hidden && (
                                         <span className="block mt-2">
                                           {/* blurは本文だけ */}
-                                          <span className="inline-block align-middle w-full select-none" style={{ filter: "blur(6px)", background: "rgba(255,255,255,0.4)", borderRadius: "10px", padding: "16px 10px", boxShadow: "0 4px 32px 0 rgba(80,0,120,0.10)", border: "1.5px solid rgba(180,180,255,0.25)", backdropFilter: "blur(2px)" }}>{hidden}</span>
+                                          <span
+                                            className="inline-block align-middle w-full select-none"
+                                            style={canViewDetail ? {} : { filter: "blur(6px)", background: "rgba(255,255,255,0.4)", borderRadius: "10px", padding: "16px 10px", boxShadow: "0 4px 32px 0 rgba(80,0,120,0.10)", border: "1.5px solid rgba(180,180,255,0.25)", backdropFilter: "blur(2px)" }}
+                                          >
+                                            {hidden}
+                                          </span>
                                           {/* blur外に文言・ボタンを出す */}
                                           <span className="block text-lg font-semibold text-purple-700 mt-2 flex items-center justify-center gap-2">🔒 <span>有料会員限定</span></span>
                                           <span className="block text-base font-bold text-pink-600 mb-2">愛情・結婚の続き</span>
@@ -193,13 +200,29 @@ export default function LpTiktokPage() {
                             </div>
                             {/* 運勢・交渉・商取引（有料部分） */}
                         <div className="rounded-xl bg-gradient-to-r from-purple-100/60 to-pink-100/60 border border-purple-200/40 shadow-lg p-6 flex flex-col items-center relative overflow-hidden">
-                            <span className="inline-block align-middle w-full text-center" style={{ background: "rgba(255,255,255,0.4)", borderRadius: "14px", padding: "24px 14px", boxShadow: "0 4px 32px 0 rgba(80,0,120,0.10)", border: "1.5px solid rgba(180,180,255,0.25)", backdropFilter: "blur(2px)" }}>
-                                <span className="block text-lg font-semibold text-purple-700 mb-2 flex items-center justify-center gap-2">🔒 <span>有料会員限定</span></span>
-                              <span className="block text-base font-bold text-pink-600 mb-2">運勢・交渉・商取引</span>
-                              <span className="block text-gray-500 mb-1">ここにはあなたの運命や人間関係、仕事・金運の詳細なアドバイスが隠されています…</span>
-                              <span className="block text-gray-400 italic">（新規登録またはログインで全ての情報が解放されます）</span>
-                              <span className="block mt-4 text-2xl text-purple-300/80">•••</span>
-                            </span>
+                            {(() => {
+                              const canViewDetail = isAdViewed || !!session;
+                              return (
+                                <span
+                                  className="inline-block align-middle w-full text-center"
+                                  style={canViewDetail ? {} : { background: "rgba(255,255,255,0.4)", borderRadius: "14px", padding: "24px 14px", boxShadow: "0 4px 32px 0 rgba(80,0,120,0.10)", border: "1.5px solid rgba(180,180,255,0.25)", backdropFilter: "blur(2px)", filter: "blur(6px)" }}
+                                >
+                                  <span className="block text-lg font-semibold text-purple-700 mb-2 flex items-center justify-center gap-2">🔒 <span>詳細閲覧には広告視聴またはログインが必要です</span></span>
+                                  <span className="block text-base font-bold text-pink-600 mb-2">運勢・交渉・商取引</span>
+                                  <span className="block text-gray-500 mb-1">ここにはあなたの運命や人間関係、仕事・金運の詳細なアドバイスが隠されています…</span>
+                                  <span className="block text-gray-400 italic">（新規登録またはログインで全ての情報が解放されます）</span>
+                                  <span className="block mt-4 text-2xl text-purple-300/80">•••</span>
+                                  {!canViewDetail && (
+                                    <button
+                                      className="block w-full mt-2 px-6 py-2 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-pink-600 hover:to-indigo-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-purple-200/30"
+                                      onClick={() => setShowAdModal(true)}
+                                    >
+                                      広告を見て詳細を表示
+                                    </button>
+                                  )}
+                                </span>
+                              );
+                            })()}
                               <div className="w-full flex justify-center gap-4 mt-6">
                                 <Link href="/register?from=lp-tiktok" className="px-7 py-3 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-pink-600 hover:to-indigo-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-purple-200/30">新規登録</Link>
                                 <Link href="/login?from=lp-tiktok" className="px-7 py-3 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 hover:from-indigo-600 hover:to-pink-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-pink-200/30">ログイン</Link>
