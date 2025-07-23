@@ -8,21 +8,24 @@ interface CheckoutButtonProps {
 export default function CheckoutButton({ className }: CheckoutButtonProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [loading, setLoading] = useState(false);
+  const publicKey = process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY || "";
 
   useEffect(() => {
     if (!formRef.current) return;
+    if (!publicKey) {
+      console.warn("Pay.jp公開鍵が設定されていません。NEXT_PUBLIC_PAYJP_PUBLIC_KEYを環境変数で指定してください。");
+      return;
+    }
     if (formRef.current.querySelector("#payjp-checkout-script")) return;
 
     const script = document.createElement("script");
     script.src = "https://checkout.pay.jp/";
     script.className = "payjp-button";
-    // 公開鍵は環境変数から注入（Next.jsのpublicRuntimeConfigやprocess.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEYなどを利用）
-    script.setAttribute("data-key", process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY || "");
+    script.setAttribute("data-key", publicKey);
     script.setAttribute("data-partial", "true");
     script.id = "payjp-checkout-script";
     formRef.current.appendChild(script);
 
-    // ハンドラを定義
     const handler = async function (e: any) {
       setLoading(true);
       const token = e.detail.token;
@@ -40,11 +43,14 @@ export default function CheckoutButton({ className }: CheckoutButtonProps) {
       }
     };
     window.addEventListener("payjp_token_created", handler);
-    // クリーンアップ
     return () => {
       window.removeEventListener("payjp_token_created", handler);
     };
-  }, []);
+  }, [publicKey]);
+
+  if (!publicKey) {
+    return <div style={{color: 'red', fontWeight: 700}}>Pay.jp公開鍵が設定されていません。管理者にご連絡ください。</div>;
+  }
 
   return (
     <form ref={formRef} action="#" method="POST" className={className} onSubmit={e => e.preventDefault()}>
