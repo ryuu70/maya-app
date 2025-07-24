@@ -28,14 +28,19 @@ export async function POST(request: NextRequest) {
       customerEmail = event.data.object.email;
     }
 
+    // デバッグ用ログ
+    console.log("Webhook event:", JSON.stringify(event, null, 2));
+    console.log("customerEmail:", customerEmail);
+
     if (!customerEmail) {
-      return NextResponse.json({ error: "顧客メールが特定できません" }, { status: 400 });
+      // 400返す代わりにevent内容を返す（デバッグ用）
+      return NextResponse.json({ error: "顧客メールが特定できません", event }, { status: 200 });
     }
 
     // ユーザーを検索
     const user = await prisma.user.findUnique({ where: { email: customerEmail } });
     if (!user) {
-      return NextResponse.json({ error: "ユーザーが見つかりません" }, { status: 404 });
+      return NextResponse.json({ error: "ユーザーが見つかりません", customerEmail, event }, { status: 200 });
     }
 
     // イベント種別ごとにDBを更新
@@ -74,7 +79,7 @@ export async function POST(request: NextRequest) {
         logMsg = "支払い成功";
         break;
       default:
-        return NextResponse.json({ error: `未対応のイベントタイプ: ${eventType}` }, { status: 400 });
+        return NextResponse.json({ error: `未対応のイベントタイプ: ${eventType}`, event }, { status: 200 });
     }
 
     const updatedUser = await prisma.user.update({
