@@ -22,6 +22,9 @@ export default async function AdminPage() {
             isPaid: true,
             renewalStatus: true,
             createdAt: true,
+            payjpCustomerId: true,
+            subscriptionPlan: true,
+            subscriptionStatus: true,
         },
     })
 
@@ -38,6 +41,9 @@ export default async function AdminPage() {
                         <th className="border px-2 py-1 text-black">課金中</th>
                         <th className="border px-2 py-1 text-black">継続申請</th>
                         <th className="border px-2 py-1 text-black">登録日</th>
+                        <th className="border px-2 py-1 text-black">Pay.jp顧客ID</th>
+                        <th className="border px-2 py-1 text-black">プラン</th>
+                        <th className="border px-2 py-1 text-black">サブスク状態</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -49,6 +55,9 @@ export default async function AdminPage() {
                             <td className="border px-2 py-1 text-black">{u.isPaid ? '✔' : '―'}</td>
                             <td className="border px-2 py-1 text-black">{u.renewalStatus}</td>
                             <td className="border px-2 py-1 text-black">{new Date(u.createdAt).toLocaleDateString()}</td>
+                            <td className="border px-2 py-1 text-black">{u.payjpCustomerId || '―'}</td>
+                            <td className="border px-2 py-1 text-black">{u.subscriptionPlan || '―'}</td>
+                            <td className="border px-2 py-1 text-black">{u.subscriptionStatus || '―'}</td>
                         </tr>
                     ))}
                 </tbody>

@@ -50,6 +50,7 @@ export async function POST(request: NextRequest) {
     // デバッグ用ログ
     console.log("Webhook event:", JSON.stringify(event, null, 2));
     console.log("customerEmail:", customerEmail);
+    console.log("customerId:", customerId);
 
     if (!customerEmail) {
       // 400返す代わりにevent内容を返す（デバッグ用）
@@ -75,6 +76,7 @@ export async function POST(request: NextRequest) {
           isPaid: true,
           subscriptionStatus: event.data?.object?.status || event.data?.status || "active",
           subscriptionPlan: (event.data?.object?.plan?.id || event.data?.plan?.id || null)?.toUpperCase() || null,
+          payjpCustomerId: customerId || null,
         };
         logMsg = "サブスクリプション作成/更新/再開";
         break;
@@ -83,6 +85,7 @@ export async function POST(request: NextRequest) {
         updateData = {
           isPaid: false,
           subscriptionStatus: "canceled",
+          payjpCustomerId: customerId || null,
         };
         logMsg = "サブスクリプション解約/削除";
         break;
@@ -90,6 +93,7 @@ export async function POST(request: NextRequest) {
         updateData = {
           isPaid: false,
           subscriptionStatus: "payment_failed",
+          payjpCustomerId: customerId || null,
         };
         logMsg = "支払い失敗";
         break;
@@ -97,6 +101,7 @@ export async function POST(request: NextRequest) {
         updateData = {
           isPaid: true,
           subscriptionStatus: "active",
+          payjpCustomerId: customerId || null,
         };
         logMsg = "支払い成功";
         break;
@@ -113,6 +118,8 @@ export async function POST(request: NextRequest) {
       email: updatedUser.email,
       isPaid: updatedUser.isPaid,
       subscriptionStatus: updatedUser.subscriptionStatus,
+      subscriptionPlan: updatedUser.subscriptionPlan,
+      payjpCustomerId: updatedUser.payjpCustomerId,
       eventType,
     });
 
