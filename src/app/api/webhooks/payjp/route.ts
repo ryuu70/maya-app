@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
         updateData = {
           isPaid: true,
           subscriptionStatus: event.data?.object?.status || event.data?.status || "active",
-          subscriptionPlan: event.data?.object?.plan?.id || event.data?.plan?.id || null,
+          subscriptionPlan: (event.data?.object?.plan?.id || event.data?.plan?.id || null)?.toUpperCase() || null,
         };
         logMsg = "サブスクリプション作成/更新/再開";
         break;
