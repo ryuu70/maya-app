@@ -198,7 +198,7 @@ function CheckoutPageContent() {
         onClick={getToken}
         className="w-full p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium"
       >
-        ¥3,000を支払う
+        {plan === "basic" ? "¥980" : plan === "premium" ? "¥2,980" : "¥3,000"}を支払う
       </button>
     </div>
   );
