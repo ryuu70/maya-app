@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Payjp from "payjp";
 
 export async function POST(request: NextRequest) {
-  const { token, plan } = await request.json();
+  const { token, plan, email } = await request.json();
   if (!token) {
     return NextResponse.json({ success: false, message: "トークンがありません" }, { status: 400 });
   }
@@ -16,9 +16,14 @@ export async function POST(request: NextRequest) {
   let amount = 1000;
   if (plan === "basic") amount = 980;
   if (plan === "premium") amount = 2980;
-
   try {
     const payjp = Payjp(PAYJP_SECRET_KEY);
+
+    //カスタマーを作成
+    const customer = await payjp.customers.create({
+      email, // メールアドレスを登録
+      card: token, // カードトークンを登録
+    });
     const charge = await payjp.charges.create({
       amount,
       card: token,

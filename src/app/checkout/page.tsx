@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import type PayjpJs from "typedef-payjp-js";
 import { useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Suspense } from "react";
 
 declare global {
@@ -21,6 +22,7 @@ export default function CheckoutPage() {
 }
 
 function CheckoutPageContent() {
+  const { data: session } = useSession();
   // --- 初回表示時のみ自動リロード ---
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -109,10 +111,15 @@ function CheckoutPageContent() {
       // サーバーへの送信処理
       alert(`Token取得成功: ${result.id}`);
       try {
+        const email = session?.user?.email;
+        if (!email) {
+          alert("ログインしていません。メールアドレスが取得できません。");
+          return;
+        }
         const res = await fetch("/api/pay", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token: result.id, plan }),
+          body: JSON.stringify({ token: result.id, plan, email }),
         });
         const data = await res.json();
         if (data.success) {

@@ -50,7 +50,7 @@ export default function LpTiktokPage() {
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 flex flex-col items-center justify-start p-0 sm:p-4">
       <header className="w-full max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto pt-8 pb-4 px-4 sm:px-8 md:px-12 lg:px-16">
         <h1 className="text-2xl xs:text-3xl sm:text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 mb-6 sm:mb-8 drop-shadow-lg tracking-tight leading-tight">
-          <span role="img" aria-label="crystal-ball">🔮</span> TikTok限定！かんたんマヤ診断
+          <span role="img" aria-label="crystal-ball">🔮</span> かんたんマヤ診断
         </h1>
       </header>
       <main className="min-h-screen w-full flex-1 flex flex-col items-center justify-start px-2 sm:px-0">
