@@ -20,15 +20,15 @@ export async function POST(request: NextRequest) {
     const payjp = Payjp(PAYJP_SECRET_KEY);
 
     //カスタマーを作成
-    const customer = await payjp.customers.create({
-      email, // メールアドレスを登録
-      card: token, // カードトークンを登録
-    });
+    // const customer = await payjp.customers.create({
+    //   email, // メールアドレスを登録
+    //   card: token, // カードトークンを登録
+    // });
     const charge = await payjp.charges.create({
       amount,
       card: token,
       currency: "jpy",
-      customer: customer.id
+    //  customer: customer.id
     });
     return NextResponse.json({ success: true, message: "決済完了", charge });
   } catch (e: any) {
