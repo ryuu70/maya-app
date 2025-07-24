@@ -74,6 +74,7 @@ export default function LpTiktokPage() {
             <form onSubmit={handleDiagnose} className="space-y-8">
               {questions.map((q, idx) => (
                   <div key={q.id}>
+                    <label className="block mb-1 text-sm font-semibold text-purple-700">{q.text}</label>
                   {q.type === "text" && (
                     <input
                       type="text"

@@ -8,28 +8,43 @@ export async function POST(request: NextRequest) {
     const eventType = event.type;
     const PAYJP_SECRET_KEY = process.env.PAYJP_SECRET_KEY;
     let customerEmail = null;
+    let customerId = null;
 
-    // 1. object.customer.email
-    if (event.data?.object?.customer?.email) {
-      customerEmail = event.data.object.customer.email;
+    // 1. event.data.object.customer
+    if (event.data?.object?.customer) {
+      if (typeof event.data.object.customer === "string") {
+        customerId = event.data.object.customer;
+      } else if (typeof event.data.object.customer === "object" && event.data.object.customer.email) {
+        customerEmail = event.data.object.customer.email;
+      }
     }
-    // 2. object.customerがIDの場合
-    else if (typeof event.data?.object?.customer === "string" && PAYJP_SECRET_KEY) {
+    // 2. event.data.customer
+    else if (event.data?.customer) {
+      if (typeof event.data.customer === "string") {
+        customerId = event.data.customer;
+      } else if (typeof event.data.customer === "object" && event.data.customer.email) {
+        customerEmail = event.data.customer.email;
+      }
+    }
+
+    // 3. event.data.object.email
+    if (!customerEmail && event.data?.object?.email) {
+      customerEmail = event.data.object.email;
+    }
+    // 4. event.data.email
+    if (!customerEmail && event.data?.email) {
+      customerEmail = event.data.email;
+    }
+
+    // 5. customerIdからPay.jp APIでemail取得
+    if (!customerEmail && customerId && PAYJP_SECRET_KEY) {
       try {
         const payjp = Payjp(PAYJP_SECRET_KEY);
-        const customerObj = await payjp.customers.retrieve(event.data.object.customer);
+        const customerObj = await payjp.customers.retrieve(customerId);
         customerEmail = customerObj.email;
       } catch (e) {
         console.error("Payjp顧客情報取得エラー", e);
       }
-    }
-    // 3. object.email
-    else if (event.data?.object?.email) {
-      customerEmail = event.data.object.email;
-    }
-    // 4. data.email（追加）
-    else if (event.data?.email) {
-      customerEmail = event.data.email;
     }
 
     // デバッグ用ログ
