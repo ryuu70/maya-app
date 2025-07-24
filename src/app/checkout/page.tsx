@@ -137,6 +137,14 @@ function CheckoutPageContent() {
           alert("顧客作成に失敗しました: " + (customerData.error || ""));
           return;
         }
+        // 既存サブスクリプションの有無をチェック
+        const alreadySubscribed = customerData.customer.subscriptions?.data?.some(
+          (sub: any) => sub.plan.id === plan && (sub.status === "active" || sub.status === "trial")
+        );
+        if (alreadySubscribed) {
+          alert("すでにこのプランに登録済みです。");
+          return;
+        }
         // 2. サブスクリプション作成
         const subscribeRes = await fetch("/api/payjp/subscribe", {
           method: "POST",
