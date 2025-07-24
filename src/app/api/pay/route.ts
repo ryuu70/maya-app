@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
       amount,
       card: token,
       currency: "jpy",
+      customer: customer.id,
     });
     return NextResponse.json({ success: true, message: "決済完了", charge });
   } catch (e: any) {
