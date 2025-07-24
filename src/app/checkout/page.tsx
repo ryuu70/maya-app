@@ -126,7 +126,13 @@ function CheckoutPageContent() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, token: result.id }),
         });
-        const customerData = await customerRes.json();
+        let customerData;
+        if (customerRes.ok && customerRes.headers.get("content-type")?.includes("application/json")) {
+          customerData = await customerRes.json();
+        } else {
+          const text = await customerRes.text();
+          throw new Error(`顧客作成APIエラー: ${text}`);
+        }
         if (!customerData.customer?.id) {
           alert("顧客作成に失敗しました: " + (customerData.error || ""));
           return;
@@ -137,7 +143,13 @@ function CheckoutPageContent() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ customerId: customerData.customer.id, planId: plan }),
         });
-        const subscribeData = await subscribeRes.json();
+        let subscribeData;
+        if (subscribeRes.ok && subscribeRes.headers.get("content-type")?.includes("application/json")) {
+          subscribeData = await subscribeRes.json();
+        } else {
+          const text = await subscribeRes.text();
+          throw new Error(`サブスクリプションAPIエラー: ${text}`);
+        }
         if (!subscribeData.subscription?.id) {
           alert("サブスクリプション作成に失敗しました: " + (subscribeData.error || ""));
           return;
