@@ -67,11 +67,14 @@ export async function POST(request: NextRequest) {
     let logMsg = "";
     switch (eventType) {
       case "customer.subscription.created":
+      case "subscription.created":
       case "customer.subscription.resumed":
       case "customer.subscription.updated":
+      case "subscription.updated":
         updateData = {
           isPaid: true,
-          subscriptionStatus: event.data?.object?.status || "active",
+          subscriptionStatus: event.data?.object?.status || event.data?.status || "active",
+          subscriptionPlan: event.data?.object?.plan?.id || event.data?.plan?.id || null,
         };
         logMsg = "サブスクリプション作成/更新/再開";
         break;
