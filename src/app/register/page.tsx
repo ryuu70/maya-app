@@ -10,7 +10,6 @@ import { Suspense } from 'react'
 
 function RegisterForm() {
     const router = useRouter()
-    const searchParams = useSearchParams()
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
