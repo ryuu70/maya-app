@@ -21,6 +21,16 @@ export default function CheckoutPage() {
 }
 
 function CheckoutPageContent() {
+  // --- 初回表示時のみ自動リロード ---
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (!sessionStorage.getItem("checkout_reloaded")) {
+        sessionStorage.setItem("checkout_reloaded", "1");
+        window.location.reload();
+      }
+    }
+  }, []);
+
   const [payjp, setPayjp] = useState<PayjpJs.Payjp | null>(null);
 
   const numberRef = useRef<PayjpJs.PayjpElement | null>(null);
