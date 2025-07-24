@@ -9,8 +9,7 @@ export async function POST(request: NextRequest) {
 
   // 顧客ID・サブスクID取得
   const customerId = obj?.customer;
-  const subscriptionId = obj?.id;
-  let status = obj?.status;
+  const status = obj?.status;
 
   // 顧客IDがなければ何もしない
   if (!customerId) {
