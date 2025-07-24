@@ -1,23 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/app/lib/prisma";
+import Payjp from "payjp";
 
-// Pay.jp Webhook用エンドポイント
 export async function POST(request: NextRequest) {
   try {
     const event = await request.json();
-    // Pay.jpのイベント種別
     const eventType = event.type;
-    // 顧客情報
-    const customer = event.data?.object?.customer;
-    // サブスクリプション情報
-    const subscription = event.data?.object;
-    // 顧客メール（Pay.jpのcustomerオブジェクトにemailが含まれる）
+    const PAYJP_SECRET_KEY = process.env.PAYJP_SECRET_KEY;
     let customerEmail = null;
-    if (customer && typeof customer === "object" && customer.email) {
-      customerEmail = customer.email;
-    } else if (subscription && subscription.customer && subscription.customer.email) {
-      customerEmail = subscription.customer.email;
-    } else if (event.data?.object?.email) {
+
+    // 1. 直接emailがある場合
+    if (event.data?.object?.customer?.email) {
+      customerEmail = event.data.object.customer.email;
+    }
+    // 2. customerがIDの場合
+    else if (typeof event.data?.object?.customer === "string" && PAYJP_SECRET_KEY) {
+      try {
+        const payjp = Payjp(PAYJP_SECRET_KEY);
+        const customerObj = await payjp.customers.retrieve(event.data.object.customer);
+        customerEmail = customerObj.email;
+      } catch (e) {
+        console.error("Payjp顧客情報取得エラー", e);
+      }
+    }
+    // 3. object自体にemailがある場合
+    else if (event.data?.object?.email) {
       customerEmail = event.data.object.email;
     }
 
@@ -40,7 +47,7 @@ export async function POST(request: NextRequest) {
       case "customer.subscription.updated":
         updateData = {
           isPaid: true,
-          subscriptionStatus: subscription.status || "active",
+          subscriptionStatus: event.data?.object?.status || "active",
         };
         logMsg = "サブスクリプション作成/更新/再開";
         break;
