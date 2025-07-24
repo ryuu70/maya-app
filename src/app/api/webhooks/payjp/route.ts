@@ -9,11 +9,11 @@ export async function POST(request: NextRequest) {
     const PAYJP_SECRET_KEY = process.env.PAYJP_SECRET_KEY;
     let customerEmail = null;
 
-    // 1. 直接emailがある場合
+    // 1. object.customer.email
     if (event.data?.object?.customer?.email) {
       customerEmail = event.data.object.customer.email;
     }
-    // 2. customerがIDの場合
+    // 2. object.customerがIDの場合
     else if (typeof event.data?.object?.customer === "string" && PAYJP_SECRET_KEY) {
       try {
         const payjp = Payjp(PAYJP_SECRET_KEY);
@@ -23,9 +23,13 @@ export async function POST(request: NextRequest) {
         console.error("Payjp顧客情報取得エラー", e);
       }
     }
-    // 3. object自体にemailがある場合
+    // 3. object.email
     else if (event.data?.object?.email) {
       customerEmail = event.data.object.email;
+    }
+    // 4. data.email（追加）
+    else if (event.data?.email) {
+      customerEmail = event.data.email;
     }
 
     // デバッグ用ログ
