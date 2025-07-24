@@ -116,17 +116,33 @@ function CheckoutPageContent() {
           alert("ログインしていません。メールアドレスが取得できません。");
           return;
         }
-        const res = await fetch("/api/pay", {
+        if (!plan) {
+          alert("プランが選択されていません");
+          return;
+        }
+        // 1. 顧客作成/検索
+        const customerRes = await fetch("/api/payjp/customer", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token: result.id, plan, email }),
+          body: JSON.stringify({ email, token: result.id }),
         });
-        const data = await res.json();
-        if (data.success) {
-          alert("決済完了: " + data.message);
-        } else {
-          alert("決済エラー: " + data.message);
+        const customerData = await customerRes.json();
+        if (!customerData.customer?.id) {
+          alert("顧客作成に失敗しました: " + (customerData.error || ""));
+          return;
         }
+        // 2. サブスクリプション作成
+        const subscribeRes = await fetch("/api/payjp/subscribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ customerId: customerData.customer.id, planId: plan }),
+        });
+        const subscribeData = await subscribeRes.json();
+        if (!subscribeData.subscription?.id) {
+          alert("サブスクリプション作成に失敗しました: " + (subscribeData.error || ""));
+          return;
+        }
+        alert("サブスクリプション決済が完了しました！");
       } catch (e: any) {
         alert("通信エラー: " + (e?.message || e));
       }

@@ -1,8 +1,9 @@
+import { log } from "console";
 import { NextRequest, NextResponse } from "next/server";
 import Payjp from "payjp";
 
 export async function POST(request: NextRequest) {
-  const { token, plan} = await request.json();
+  const { token, plan, email } = await request.json();
   if (!token) {
     return NextResponse.json({ success: false, message: "トークンがありません" }, { status: 400 });
   }
