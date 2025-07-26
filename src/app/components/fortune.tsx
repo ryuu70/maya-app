@@ -10,7 +10,6 @@ import {
 } from '@/app/lib/kin'
 import { getEkiDetail, getEkiDiscDetail, getWaveDetail } from '@/app/lib/eki'
 import { getKakeByKin } from '@/app/lib/kake'
-import { useSession } from 'next-auth/react'
 
 function formatJapaneseDate(dateStr: string): string {
     const date = new Date(dateStr)
@@ -22,8 +21,8 @@ function calculateAgeDate(birthdayStr: string, age: number): Date {
     return new Date(date.getFullYear() + age, date.getMonth(), date.getDate())
 }
 
-// テキストを2文まで表示し、それ以降はblur＋有料案内
-function renderWithBlur(text: string, showButton = false) {
+// テキストを2文まで表示し、それ以降はblur＋広告案内
+function renderWithBlur(text: string, showButton = false, onAdClick: () => void) {
   const sentences = text.match(/[^。！？!?\n]+[。！？!?]?/g) || [text];
   const visible = sentences.slice(0, 2).join("");
   const hidden = sentences.slice(2).join("");
@@ -35,7 +34,12 @@ function renderWithBlur(text: string, showButton = false) {
           <span className="inline-block align-middle w-full text-black select-none" style={{ filter: "blur(6px)", background: "rgba(255,255,255,0.4)", borderRadius: "10px", padding: "8px 10px", boxShadow: "0 4px 32px 0 rgba(80,0,120,0.10)", border: "1.5px solid rgba(180,180,255,0.25)", backdropFilter: "blur(2px)" }}>{hidden}</span>
           {showButton && (
             <div className="w-full flex justify-center gap-4 mt-3">
-              <a href="/pricing" className="px-6 py-2 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-pink-600 hover:to-indigo-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-purple-200/30">有料プラン登録で全て表示</a>
+              <button 
+                onClick={onAdClick}
+                className="px-6 py-2 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-pink-600 hover:to-indigo-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-purple-200/30"
+              >
+                広告を見て詳細表示
+              </button>
             </div>
           )}
         </span>
@@ -45,9 +49,9 @@ function renderWithBlur(text: string, showButton = false) {
 }
 
 export default function Fortune({ birthday, name }: { birthday: string; name: string }) {
-    const { data: session } = useSession();
-    const [isPaid, setIsPaid] = useState<boolean | null>(null);
     const [mounted, setMounted] = useState(false);
+    const [isAdViewed, setIsAdViewed] = useState(false);
+    const [showAdModal, setShowAdModal] = useState(false);
     const router = useRouter()
     const searchParams = useSearchParams()
     const [age, setAge] = useState<number>(Number(searchParams.get('age') ?? 0))
@@ -97,20 +101,20 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
         }
     }, [birthday, age])
 
-    // サブスクリプション状態取得
     useEffect(() => {
-      async function fetchSubscription() {
-        if (!session?.user) return;
-        const email = session.user.email;
-        // idは型定義上存在しない場合があるため、emailのみでAPIを呼ぶ
-        if (!email) return;
-        const res = await fetch(`/api/subscriptions/status?email=${encodeURIComponent(email)}`);
-        const data = await res.json();
-        setIsPaid(!!data?.user?.isPaid);
-      }
-      fetchSubscription();
       setMounted(true);
-    }, [session]);
+    }, []);
+
+    // 広告モーダルを表示
+    const showAd = () => {
+        setShowAdModal(true);
+    };
+
+    // 広告モーダルを閉じる
+    const closeAdModal = () => {
+        setShowAdModal(false);
+        setIsAdViewed(true);
+    };
 
     // エラー状態の処理
     if (!mounted) return null;
@@ -310,7 +314,7 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">概要</span>
-                            <p className="text-sm leading-relaxed">{isPaid ? (ekiDetail.概要 || '情報なし') : renderWithBlur(ekiDetail.概要 || '情報なし', true)}</p>
+                            <p className="text-sm leading-relaxed">{isAdViewed ? (ekiDetail.概要 || '情報なし') : renderWithBlur(ekiDetail.概要 || '情報なし', true, showAd)}</p>
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">ワンポイント</span>
@@ -353,31 +357,31 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">卦の象</span>
-                            <p className="text-sm leading-relaxed whitespace-pre-line">{renderWithBlur(fortuneData.kakeDetail.詳細.卦の象, false)}</p>
+                            <p className="text-sm leading-relaxed whitespace-pre-line">{isAdViewed ? fortuneData.kakeDetail.詳細.卦の象 : renderWithBlur(fortuneData.kakeDetail.詳細.卦の象, false, showAd)}</p>
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">病気</span>
-                            <p className="text-sm leading-relaxed whitespace-pre-line">{renderWithBlur(fortuneData.kakeDetail.詳細.占いの目安.病気, false)}</p>
+                            <p className="text-sm leading-relaxed whitespace-pre-line">{isAdViewed ? fortuneData.kakeDetail.詳細.占いの目安.病気 : renderWithBlur(fortuneData.kakeDetail.詳細.占いの目安.病気, false, showAd)}</p>
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">失せ物</span>
-                            <p className="text-sm leading-relaxed whitespace-pre-line">{renderWithBlur(fortuneData.kakeDetail.詳細.占いの目安.失せ物, false)}</p>
+                            <p className="text-sm leading-relaxed whitespace-pre-line">{isAdViewed ? fortuneData.kakeDetail.詳細.占いの目安.失せ物 : renderWithBlur(fortuneData.kakeDetail.詳細.占いの目安.失せ物, false, showAd)}</p>
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">人物</span>
-                            <p className="text-sm leading-relaxed whitespace-pre-line">{renderWithBlur(fortuneData.kakeDetail.詳細.占いの目安.人物, false)}</p>
+                            <p className="text-sm leading-relaxed whitespace-pre-line">{isAdViewed ? fortuneData.kakeDetail.詳細.占いの目安.人物 : renderWithBlur(fortuneData.kakeDetail.詳細.占いの目安.人物, false, showAd)}</p>
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">愛情・結婚</span>
-                            <p className="text-sm leading-relaxed whitespace-pre-line">{renderWithBlur(fortuneData.kakeDetail.詳細.占いの目安['愛情・結婚'], true)}</p>
+                            <p className="text-sm leading-relaxed whitespace-pre-line">{isAdViewed ? fortuneData.kakeDetail.詳細.占いの目安['愛情・結婚'] : renderWithBlur(fortuneData.kakeDetail.詳細.占いの目安['愛情・結婚'], true, showAd)}</p>
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">運勢</span>
-                            <p className="text-sm leading-relaxed whitespace-pre-line">{renderWithBlur(fortuneData.kakeDetail.詳細.占いの目安.運勢, false)}</p>
+                            <p className="text-sm leading-relaxed whitespace-pre-line">{isAdViewed ? fortuneData.kakeDetail.詳細.占いの目安.運勢 : renderWithBlur(fortuneData.kakeDetail.詳細.占いの目安.運勢, false, showAd)}</p>
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">交渉・商取引</span>
-                            <p className="text-sm leading-relaxed whitespace-pre-line">{renderWithBlur(fortuneData.kakeDetail.詳細.占いの目安['交渉・商取引'], false)}</p>
+                            <p className="text-sm leading-relaxed whitespace-pre-line">{isAdViewed ? fortuneData.kakeDetail.詳細.占いの目安['交渉・商取引'] : renderWithBlur(fortuneData.kakeDetail.詳細.占いの目安['交渉・商取引'], false, showAd)}</p>
                         </div>
                     </div>
                 </div>
@@ -403,7 +407,7 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
                     <div className="grid grid-cols-1 gap-4 text-gray-700 text-sm">
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">波動数の説明</span>
-                            <p className="text-sm leading-relaxed whitespace-pre-line">{isPaid ? (waveDetail.説明 || '情報なし') : renderWithBlur(waveDetail.説明 || '情報なし', true)}</p>
+                            <p className="text-sm leading-relaxed whitespace-pre-line">{isAdViewed ? (waveDetail.説明 || '情報なし') : renderWithBlur(waveDetail.説明 || '情報なし', true, showAd)}</p>
                         </div>
                     </div>
                 </div>
@@ -435,31 +439,12 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">概要</span>
-                            <p className="text-sm leading-relaxed">{isPaid ? (mirrorDetail.概要 || '情報なし') : renderWithBlur(mirrorDetail.概要 || '情報なし', true)}</p>
+                            <p className="text-sm leading-relaxed">{isAdViewed ? (mirrorDetail.概要 || '情報なし') : renderWithBlur(mirrorDetail.概要 || '情報なし', true, showAd)}</p>
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">ワンポイント</span>
                             <p className="text-sm leading-relaxed text-green-800 font-medium">
-                                {isPaid ? (mirrorDetail.ワンポイント || '情報なし') : (
-                                  (() => {
-                                    const text = mirrorDetail.ワンポイント || '';
-                                    const visible = text.slice(0, 10);
-                                    const hidden = text.slice(10);
-                                    return (
-                                      <>
-                                        <span>{visible}</span>
-                                        {hidden && (
-                                          <span className="block mt-2">
-                                            <span className="inline-block align-middle w-full text-black select-none" style={{ filter: "blur(6px)", background: "rgba(255,255,255,0.4)", borderRadius: "10px", padding: "8px 10px", boxShadow: "0 4px 32px 0 rgba(80,0,120,0.10)", border: "1.5px solid rgba(180,180,255,0.25)", backdropFilter: "blur(2px)" }}>{hidden}</span>
-                                            <div className="w-full flex justify-center gap-4 mt-3">
-                                              <a href="/pricing" className="px-6 py-2 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-pink-600 hover:to-indigo-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-purple-200/30">有料プラン登録で全て表示</a>
-                                            </div>
-                                          </span>
-                                        )}
-                                      </>
-                                    );
-                                  })()
-                                )}
+                                {mirrorDetail.ワンポイント || '情報なし'}
                             </p>
                         </div>
                         <div className="flex flex-col">
@@ -497,31 +482,12 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">概要</span>
-                            <p className="text-sm leading-relaxed">{isPaid ? (oppositeDetail.概要 || '情報なし') : renderWithBlur(oppositeDetail.概要 || '情報なし', true)}</p>
+                            <p className="text-sm leading-relaxed">{isAdViewed ? (oppositeDetail.概要 || '情報なし') : renderWithBlur(oppositeDetail.概要 || '情報なし', true, showAd)}</p>
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xs text-gray-500">ワンポイント</span>
                             <p className="text-sm leading-relaxed text-green-800 font-medium">
-                                {isPaid ? (oppositeDetail.ワンポイント || '情報なし') : (
-                                  (() => {
-                                    const text = oppositeDetail.ワンポイント || '';
-                                    const visible = text.slice(0, 10);
-                                    const hidden = text.slice(10);
-                                    return (
-                                      <>
-                                        <span>{visible}</span>
-                                        {hidden && (
-                                          <span className="block mt-2">
-                                            <span className="inline-block align-middle w-full text-black select-none" style={{ filter: "blur(6px)", background: "rgba(255,255,255,0.4)", borderRadius: "10px", padding: "8px 10px", boxShadow: "0 4px 32px 0 rgba(80,0,120,0.10)", border: "1.5px solid rgba(180,180,255,0.25)", backdropFilter: "blur(2px)" }}>{hidden}</span>
-                                            <div className="w-full flex justify-center gap-4 mt-3">
-                                              <a href="/pricing" className="px-6 py-2 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-pink-600 hover:to-indigo-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-purple-200/30">有料プラン登録で全て表示</a>
-                                            </div>
-                                          </span>
-                                        )}
-                                      </>
-                                    );
-                                  })()
-                                )}
+                                {oppositeDetail.ワンポイント || '情報なし'}
                             </p>
                         </div>
                         <div className="flex flex-col">
@@ -529,6 +495,39 @@ export default function Fortune({ birthday, name }: { birthday: string; name: st
                             <p className="text-sm">{oppositeDetail.著名人 || '情報なし'}</p>
                         </div>
 
+                    </div>
+                </div>
+            )}
+
+            {/* 広告モーダル */}
+            {showAdModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg p-6 max-w-md w-full">
+                        <h3 className="text-lg font-bold mb-4">広告をご覧ください</h3>
+                        <div className="mb-4">
+                            <a href="https://px.a8.net/svt/ejp?a8mat=459VF6+DW45P6+2PEO+C4DVL" rel="nofollow" target="_blank">
+                                <img 
+                                    width="300" 
+                                    height="250" 
+                                    alt="" 
+                                    src="https://www27.a8.net/svt/bgt?aid=250723410840&wid=002&eno=01&mid=s00000012624002036000&mc=1"
+                                    style={{ border: 0 }}
+                                />
+                            </a>
+                            <img 
+                                width="1" 
+                                height="1" 
+                                src="https://www17.a8.net/0.gif?a8mat=459VF6+DW45P6+2PEO+C4DVL" 
+                                alt="" 
+                                style={{ border: 0 }}
+                            />
+                        </div>
+                        <button
+                            onClick={closeAdModal}
+                            className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+                        >
+                            広告を確認しました
+                        </button>
                     </div>
                 </div>
             )}
