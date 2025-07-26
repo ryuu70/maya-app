@@ -25,6 +25,7 @@ export default function TarotPage() {
     const [lastDrawDate, setLastDrawDate] = useState<string | null>(null)
     const [isRevealing, setIsRevealing] = useState(false)
     const [isCardAnimating, setIsCardAnimating] = useState(true)
+    const [isVideoPlaying, setIsVideoPlaying] = useState(false)
 
     // タロットカードの初期化と日次制限チェック
     useEffect(() => {
@@ -62,6 +63,7 @@ export default function TarotPage() {
         setSelectedCard(null)
         setShowDetail(false)
         setIsCardAnimating(true)
+        setIsVideoPlaying(false)
     }
 
     // カードをシャッフル
@@ -93,30 +95,36 @@ export default function TarotPage() {
         setIsRevealing(true)
         setIsCardAnimating(false)
         
-        // アニメーション効果（1.5秒）
+        // アニメーション効果（1.5秒）後に動画再生開始
         setTimeout(() => {
             const updatedCards = cards.map(c => 
                 c.id === card.id ? { ...c, isRevealed: true } : c
             )
             setCards(updatedCards)
             setSelectedCard({ ...card, isRevealed: true })
-            setShowDetail(true)
             setIsRevealing(false)
+            setIsVideoPlaying(true)
             
             // 日次制限を設定
             const today = new Date().toDateString()
             localStorage.setItem('tarot_last_draw_date', today)
             setCanDrawToday(false)
             setLastDrawDate(today)
-            
-            // モーダル表示後に自動スクロール
-            setTimeout(() => {
-                const modal = document.querySelector('[data-modal="tarot-detail"]')
-                if (modal) {
-                    modal.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                }
-            }, 100)
         }, 1500)
+    }
+
+    // 動画終了時の処理
+    const handleVideoEnded = () => {
+        setIsVideoPlaying(false)
+        setShowDetail(true)
+        
+        // モーダル表示後に自動スクロール
+        setTimeout(() => {
+            const modal = document.querySelector('[data-modal="tarot-detail"]')
+            if (modal) {
+                modal.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }
+        }, 100)
     }
 
     const getCardImage = (cardId: string) => {
@@ -300,7 +308,35 @@ export default function TarotPage() {
                     )}
                 </div>
 
-                {showDetail && selectedCard && (
+                {/* 動画再生モーダル */}
+                {isVideoPlaying && (
+                    <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+                        <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-4xl w-full">
+                            <div className="text-center mb-4">
+                                <h3 className="text-2xl font-bold text-gray-800 mb-2">タロット占い結果</h3>
+                                <p className="text-gray-600">動画をご覧ください</p>
+                            </div>
+                            <div className="relative w-full aspect-video rounded-lg overflow-hidden">
+                                <video
+                                    className="w-full h-full object-cover"
+                                    controls
+                                    autoPlay
+                                    onEnded={handleVideoEnded}
+                                >
+                                    <source src="/A_video_with_202507262320_5yo4h.mp4" type="video/mp4" />
+                                    お使いのブラウザは動画再生に対応していません。
+                                </video>
+                            </div>
+                            <div className="mt-4 text-center">
+                                <p className="text-sm text-gray-500">
+                                    動画が終了すると自動的に結果が表示されます
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {showDetail && selectedCard && !isVideoPlaying && (
                     <div 
                         data-modal="tarot-detail"
                         className="bg-white rounded-2xl shadow-2xl p-6 max-w-4xl mx-auto"
