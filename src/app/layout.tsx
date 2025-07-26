@@ -48,6 +48,8 @@ export default function RootLayout({
     <html lang="ja">
       <head>
         <script src="https://js.pay.jp/v2/pay.js" async></script>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4489409300296310"
+     crossOrigin="anonymous"></script>
       </head>
       <body className="flex flex-col min-h-screen">
         <SessionProviderWrapper>
