@@ -25,7 +25,6 @@ export default function LpTiktokPage() {
     uranaiType: string;
   }>(null);
   const [showAdModal, setShowAdModal] = useState(false);
-  const [isAdViewed, setIsAdViewed] = useState(false);
   const { data: session } = useSession();
 
   const handleChange = (qIdx: number, value: string) => {
@@ -39,7 +38,6 @@ export default function LpTiktokPage() {
   };
   const handleAdClose = () => {
     setShowAdModal(false);
-    setIsAdViewed(true);
     const [name, gender, birthday, uranaiType] = answers;
     const kin = getKinNumber(birthday);
     const kake = kin ? getKakeByKin(kin) : null;
@@ -170,7 +168,7 @@ export default function LpTiktokPage() {
                         const sentences = text.match(/[^。！？!?\n]+[。！？!?]?/g) || [text];
                         const visible = sentences.slice(0, 2).join("");
                         const hidden = sentences.slice(2).join("");
-                        const canViewDetail = isAdViewed || !!session;
+                        const canViewDetail = !!session;
                         return (
                                 <>
                                   <span>{visible}</span>
@@ -184,7 +182,7 @@ export default function LpTiktokPage() {
                                             {hidden}
                                           </span>
                                           {/* blur外に文言・ボタンを出す */}
-                                          <span className="block text-lg font-semibold text-purple-700 mt-2 flex items-center justify-center gap-2">🔒 <span>有料会員限定</span></span>
+                                          <span className="block text-lg font-semibold text-purple-700 mt-2 flex items-center justify-center gap-2">🔒 <span>ログイン限定</span></span>
                                           <span className="block text-base font-bold text-pink-600 mb-2">愛情・結婚の続き</span>
                                           <span className="block text-gray-500 mb-1">ここにはあなたの恋愛・結婚の詳細なアドバイスが隠されています…</span>
                                         <span className="block text-gray-400 italic">（新規登録またはログインで全ての情報が解放されます）</span>
@@ -202,25 +200,17 @@ export default function LpTiktokPage() {
                             {/* 運勢・交渉・商取引（有料部分） */}
                         <div className="rounded-xl bg-gradient-to-r from-purple-100/60 to-pink-100/60 border border-purple-200/40 shadow-lg p-6 flex flex-col items-center relative overflow-hidden">
                             {(() => {
-                              const canViewDetail = isAdViewed || !!session;
+                              const canViewDetail = !!session;
                               return (
                                 <span
                                   className="inline-block align-middle w-full text-center"
                                   style={canViewDetail ? {} : { background: "rgba(255,255,255,0.4)", borderRadius: "14px", padding: "24px 14px", boxShadow: "0 4px 32px 0 rgba(80,0,120,0.10)", border: "1.5px solid rgba(180,180,255,0.25)", backdropFilter: "blur(2px)", filter: "blur(6px)" }}
                                 >
-                                  <span className="block text-lg font-semibold text-purple-700 mb-2 flex items-center justify-center gap-2">🔒 <span>詳細閲覧には広告視聴またはログインが必要です</span></span>
+                                  <span className="block text-lg font-semibold text-purple-700 mb-2 flex items-center justify-center gap-2">🔒 <span>ログイン限定</span></span>
                                   <span className="block text-base font-bold text-pink-600 mb-2">運勢・交渉・商取引</span>
                                   <span className="block text-gray-500 mb-1">ここにはあなたの運命や人間関係、仕事・金運の詳細なアドバイスが隠されています…</span>
                                   <span className="block text-gray-400 italic">（新規登録またはログインで全ての情報が解放されます）</span>
                                   <span className="block mt-4 text-2xl text-purple-300/80">•••</span>
-                                  {!canViewDetail && (
-                                    <button
-                                      className="block w-full mt-2 px-6 py-2 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-pink-600 hover:to-indigo-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-purple-200/30"
-                                      onClick={() => setShowAdModal(true)}
-                                    >
-                                      広告を見て詳細を表示
-                                    </button>
-                                  )}
                                 </span>
                               );
                             })()}
@@ -233,7 +223,10 @@ export default function LpTiktokPage() {
                       )}
                     </div>
                   )}
-                    <Link href="/">トップへ戻る</Link>
+                    <div className="flex flex-col sm:flex-row gap-4 mt-6">
+                      <Link href="/" className="px-6 py-3 rounded-full font-bold text-purple-600 bg-white border-2 border-purple-300 hover:bg-purple-50 transition-all duration-200 text-center">トップへ戻る</Link>
+                      <Link href="/tarot" className="px-6 py-3 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500 hover:from-indigo-500 hover:to-purple-500 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-purple-200/30 text-center">🔮 タロット占いをする</Link>
+                    </div>
                   </div>
                 </div>
             </div>
