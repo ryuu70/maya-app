@@ -21,36 +21,54 @@ export default function TarotPage() {
     const [backImageError, setBackImageError] = useState(false)
     const [isAdViewed, setIsAdViewed] = useState(false)
     const [showAdModal, setShowAdModal] = useState(false)
+    const [canDrawToday, setCanDrawToday] = useState(true)
+    const [lastDrawDate, setLastDrawDate] = useState<string | null>(null)
+    const [isRevealing, setIsRevealing] = useState(false)
+    const [isCardAnimating, setIsCardAnimating] = useState(true)
 
-    // タロットカードの初期化
+    // タロットカードの初期化と日次制限チェック
     useEffect(() => {
         initializeCards()
+        checkDailyLimit()
     }, [])
 
+    // 日次制限のチェック
+    const checkDailyLimit = () => {
+        if (typeof window === 'undefined') return
+        
+        const today = new Date().toDateString()
+        const storedDate = localStorage.getItem('tarot_last_draw_date')
+        
+        if (storedDate === today) {
+            setCanDrawToday(false)
+            setLastDrawDate(storedDate)
+        } else {
+            setCanDrawToday(true)
+            setLastDrawDate(storedDate)
+        }
+    }
+
+    // カード1枚だけをランダムで選ぶ
     const initializeCards = () => {
         const allCards: TarotCard[] = Object.keys(tarotData).map(id => ({
             id,
             name: tarotData[id as keyof typeof tarotData].name,
             isRevealed: false,
-            isUpright: Math.random() > 0.5 // 50%の確率で正位置
+            isUpright: Math.random() > 0.5
         }))
-        setCards(allCards)
+        // 1枚だけランダムで選ぶ
+        const randomIndex = Math.floor(Math.random() * allCards.length)
+        setCards([allCards[randomIndex]])
+        setSelectedCard(null)
+        setShowDetail(false)
+        setIsCardAnimating(true)
     }
 
     // カードをシャッフル
     const shuffleCards = () => {
         setIsShuffling(true)
         setTimeout(() => {
-            const shuffled = [...cards]
-                .sort(() => Math.random() - 0.5)
-                .map(card => ({
-                    ...card,
-                    isRevealed: false,
-                    isUpright: Math.random() > 0.5
-                }))
-            setCards(shuffled)
-            setSelectedCard(null)
-            setShowDetail(false)
+            initializeCards()
             setIsShuffling(false)
         }, 1000)
     }
@@ -59,26 +77,46 @@ export default function TarotPage() {
     const selectCard = (card: TarotCard) => {
         if (isShuffling) return
         
+        // 今日既にカードを引いている場合は制限
+        if (!canDrawToday) {
+            alert('今日は既にカードを引いています。明日またお試しください。')
+            return
+        }
+        
         // 広告を見ていない場合は広告モーダルを表示
         if (!isAdViewed) {
             setShowAdModal(true)
             return
         }
         
-        const updatedCards = cards.map(c => 
-            c.id === card.id ? { ...c, isRevealed: true } : c
-        )
-        setCards(updatedCards)
-        setSelectedCard({ ...card, isRevealed: true })
-        setShowDetail(true)
+        // カードを引く処理
+        setIsRevealing(true)
+        setIsCardAnimating(false)
         
-        // モーダル表示後に自動スクロール
+        // アニメーション効果（1.5秒）
         setTimeout(() => {
-            const modal = document.querySelector('[data-modal="tarot-detail"]')
-            if (modal) {
-                modal.scrollIntoView({ behavior: 'smooth', block: 'start' })
-            }
-        }, 100)
+            const updatedCards = cards.map(c => 
+                c.id === card.id ? { ...c, isRevealed: true } : c
+            )
+            setCards(updatedCards)
+            setSelectedCard({ ...card, isRevealed: true })
+            setShowDetail(true)
+            setIsRevealing(false)
+            
+            // 日次制限を設定
+            const today = new Date().toDateString()
+            localStorage.setItem('tarot_last_draw_date', today)
+            setCanDrawToday(false)
+            setLastDrawDate(today)
+            
+            // モーダル表示後に自動スクロール
+            setTimeout(() => {
+                const modal = document.querySelector('[data-modal="tarot-detail"]')
+                if (modal) {
+                    modal.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                }
+            }, 100)
+        }, 1500)
     }
 
     const getCardImage = (cardId: string) => {
@@ -166,8 +204,18 @@ export default function TarotPage() {
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-white mb-4">タロット占い</h1>
                     <p className="text-purple-200 mb-6">
-                        カードをシャッフルして、直感で1枚選んでください
+                        カードをシャッフルして、1枚だけ選んでください
                     </p>
+                    {!canDrawToday && (
+                        <div className="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-4 mb-4">
+                            <p className="text-yellow-200 text-sm">
+                                ⏰ 今日は既にカードを引いています
+                            </p>
+                            <p className="text-yellow-100 text-xs mt-1">
+                                最後に引いた日: {lastDrawDate ? new Date(lastDrawDate).toLocaleDateString('ja-JP') : '不明'}
+                            </p>
+                        </div>
+                    )}
                     {!isAdViewed && (
                         <p className="text-yellow-200 mb-4 text-sm">
                             ※ カードを選択する前に広告をご覧ください
@@ -182,23 +230,33 @@ export default function TarotPage() {
                     </button>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 mb-8">
-                    {cards.map((card) => (
+                {/* カード1枚のみ表示 */}
+                <div className="flex justify-center items-center mb-8 min-h-[300px]">
+                    {cards.length > 0 && (
                         <button
-                            key={card.id}
-                            onClick={() => selectCard(card)}
-                            disabled={isShuffling || card.isRevealed}
-                            className="relative group cursor-pointer disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 active:scale-95"
+                            key={cards[0].id}
+                            onClick={() => selectCard(cards[0])}
+                            disabled={isShuffling || cards[0].isRevealed || !canDrawToday}
+                            className={`relative group cursor-pointer disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 active:scale-95 ${!canDrawToday ? 'opacity-50' : ''}`}
                         >
-                            <div className="relative w-full aspect-[2/3] rounded-lg overflow-hidden shadow-lg">
-                                {card.isRevealed ? (
+                            <div className={`relative w-48 h-72 rounded-lg overflow-hidden shadow-lg mx-auto
+                                ${isCardAnimating && !cards[0].isRevealed && !isRevealing ? 'animate-tarot-wiggle' : ''}
+                            `}>
+                                {cards[0].isRevealed ? (
                                     <Image
-                                        src={getCardImage(card.id)}
-                                        alt={card.name}
+                                        src={getCardImage(cards[0].id)}
+                                        alt={cards[0].name}
                                         fill
-                                        className={`object-cover ${!card.isUpright ? 'rotate-180' : ''}`}
-                                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, (max-width: 1280px) 16vw, 12vw"
+                                        className={`object-cover ${!cards[0].isUpright ? 'rotate-180' : ''}`}
+                                        sizes="200px"
                                     />
+                                ) : isRevealing && selectedCard?.id === cards[0].id ? (
+                                    <div className="w-full h-full bg-gradient-to-br from-purple-600 via-pink-600 to-indigo-600 flex items-center justify-center animate-pulse">
+                                        <div className="text-white text-center">
+                                            <div className="text-3xl mb-2 animate-bounce">✨</div>
+                                            <div className="text-sm font-semibold">カードを開いています...</div>
+                                        </div>
+                                    </div>
                                 ) : (
                                     <div className="relative w-full h-full">
                                         <Image
@@ -206,7 +264,7 @@ export default function TarotPage() {
                                             alt="カード裏面"
                                             fill
                                             className="object-cover"
-                                            sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, (max-width: 1280px) 16vw, 12vw"
+                                            sizes="200px"
                                             priority={true}
                                             unoptimized={true}
                                             onLoad={() => {
@@ -217,7 +275,6 @@ export default function TarotPage() {
                                                 setBackImageError(true)
                                             }}
                                         />
-                                        {/* フォールバック背景 - 画像が読み込まれない場合のみ表示 */}
                                         {backImageError && (
                                             <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex items-center justify-center">
                                                 <div className="text-white text-center">
@@ -229,18 +286,18 @@ export default function TarotPage() {
                                     </div>
                                 )}
                             </div>
-                            {card.isRevealed && (
+                            {cards[0].isRevealed && (
                                 <div className="mt-2 text-center">
                                     <div className="text-xs text-white font-medium drop-shadow-lg">
-                                        {card.name}
+                                        {cards[0].name}
                                     </div>
-                                    <div className={`text-xs font-bold drop-shadow-lg ${card.isUpright ? 'text-green-400' : 'text-red-400'}`}>
-                                        {card.isUpright ? '正位置' : '逆位置'}
+                                    <div className={`text-xs font-bold drop-shadow-lg ${cards[0].isUpright ? 'text-green-400' : 'text-red-400'}`}>
+                                        {cards[0].isUpright ? '正位置' : '逆位置'}
                                     </div>
                                 </div>
                             )}
                         </button>
-                    ))}
+                    )}
                 </div>
 
                 {showDetail && selectedCard && (

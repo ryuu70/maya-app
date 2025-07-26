@@ -61,12 +61,26 @@ export default async function Home() {
                 <p className="text-gray-600 mb-4">
                   誕生日を入力するだけで、あなたのKINナンバーを無料で診断できます
                 </p>
-                <a
-                  href="/free-fortune"
-                  className="inline-block bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all transform hover:scale-105"
-                >
-                  無料占いを始める
-                </a>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <a
+                    href="/free-fortune"
+                    className="inline-block bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all transform hover:scale-105"
+                  >
+                    無料占いを始める
+                  </a>
+                  <a
+                    href="/lp-tiktok"
+                    className="inline-block bg-gradient-to-r from-pink-500 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 transition-all transform hover:scale-105"
+                  >
+                    🎯 TikTok風診断
+                  </a>
+                  <a
+                    href="/tarot"
+                    className="inline-block bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all transform hover:scale-105"
+                  >
+                    🔮 タロット占い
+                  </a>
+                </div>
               </div>
             </div>
             
