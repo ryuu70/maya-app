@@ -186,9 +186,9 @@ export default function LpTiktokPage() {
                                           <span className="block text-base font-bold text-pink-600 mb-2">愛情・結婚の続き</span>
                                           <span className="block text-gray-500 mb-1">ここにはあなたの恋愛・結婚の詳細なアドバイスが隠されています…</span>
                                         <span className="block text-gray-400 italic">（新規登録またはログインで全ての情報が解放されます）</span>
-                                          <div className="w-full flex justify-center gap-4 mt-3">
-                                            <Link href="/register?from=lp-tiktok" className="px-6 py-2 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-pink-600 hover:to-indigo-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-purple-200/30">新規登録</Link>
-                                            <Link href="/login?from=lp-tiktok" className="px-6 py-2 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 hover:from-indigo-600 hover:to-pink-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-pink-200/30">ログイン</Link>
+                                          <div className="w-full flex flex-col sm:flex-row justify-center gap-4 mt-3">
+                                            <Link href="/register?from=lp-tiktok" className="px-6 py-2 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-pink-600 hover:to-indigo-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-purple-200/30 text-center">新規登録</Link>
+                                            <Link href="/login?from=lp-tiktok" className="px-6 py-2 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 hover:from-indigo-600 hover:to-pink-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-pink-200/30 text-center">ログイン</Link>
                                           </div>
                                     </span>
                                   )}
@@ -198,26 +198,38 @@ export default function LpTiktokPage() {
                               </span>
                             </div>
                             {/* 運勢・交渉・商取引（有料部分） */}
-                        <div className="rounded-xl bg-gradient-to-r from-purple-100/60 to-pink-100/60 border border-purple-200/40 shadow-lg p-6 flex flex-col items-center relative overflow-hidden">
+                        <div className="rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100/60 shadow p-4 flex flex-col relative">
+                            <span className="text-xs font-bold text-purple-500 mb-1">運勢・交渉・商取引</span>
                             {(() => {
+                              const text = result.kake.詳細?.占いの目安?.['運勢・交渉・商取引'] || '';
                               const canViewDetail = !!session;
                               return (
-                                <span
-                                  className="inline-block align-middle w-full text-center"
-                                  style={canViewDetail ? {} : { background: "rgba(255,255,255,0.4)", borderRadius: "14px", padding: "24px 14px", boxShadow: "0 4px 32px 0 rgba(80,0,120,0.10)", border: "1.5px solid rgba(180,180,255,0.25)", backdropFilter: "blur(2px)", filter: "blur(6px)" }}
-                                >
-                                  <span className="block text-lg font-semibold text-purple-700 mb-2 flex items-center justify-center gap-2">🔒 <span>ログイン限定</span></span>
-                                  <span className="block text-base font-bold text-pink-600 mb-2">運勢・交渉・商取引</span>
-                                  <span className="block text-gray-500 mb-1">ここにはあなたの運命や人間関係、仕事・金運の詳細なアドバイスが隠されています…</span>
-                                  <span className="block text-gray-400 italic">（新規登録またはログインで全ての情報が解放されます）</span>
-                                  <span className="block mt-4 text-2xl text-purple-300/80">•••</span>
+                                <span className="text-black">
+                                  {canViewDetail ? (
+                                    <span>{text}</span>
+                                  ) : (
+                                    <span className="block">
+                                      {/* blurは本文だけ */}
+                                      <span
+                                        className="inline-block align-middle w-full select-none"
+                                        style={{ filter: "blur(6px)", background: "rgba(255,255,255,0.4)", borderRadius: "10px", padding: "16px 10px", boxShadow: "0 4px 32px 0 rgba(80,0,120,0.10)", border: "1.5px solid rgba(180,180,255,0.25)", backdropFilter: "blur(2px)" }}
+                                      >
+                                        {text}
+                                      </span>
+                                      {/* blur外に文言・ボタンを出す */}
+                                      <span className="block text-lg font-semibold text-purple-700 mt-2 flex items-center justify-center gap-2">🔒 <span>ログイン限定</span></span>
+                                      <span className="block text-base font-bold text-pink-600 mb-2">運勢・交渉・商取引の詳細</span>
+                                      <span className="block text-gray-500 mb-1">ここにはあなたの運命や人間関係、仕事・金運の詳細なアドバイスが隠されています…</span>
+                                      <span className="block text-gray-400 italic">（新規登録またはログインで全ての情報が解放されます）</span>
+                                      <div className="w-full flex flex-col sm:flex-row justify-center gap-4 mt-3">
+                                        <Link href="/register?from=lp-tiktok" className="px-6 py-2 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-pink-600 hover:to-indigo-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-purple-200/30 text-center">新規登録</Link>
+                                        <Link href="/login?from=lp-tiktok" className="px-6 py-2 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 hover:from-indigo-600 hover:to-pink-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-pink-200/30 text-center">ログイン</Link>
+                                      </div>
+                                    </span>
+                                  )}
                                 </span>
                               );
                             })()}
-                              <div className="w-full flex justify-center gap-4 mt-6">
-                                <Link href="/register?from=lp-tiktok" className="px-7 py-3 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-pink-600 hover:to-indigo-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-purple-200/30">新規登録</Link>
-                                <Link href="/login?from=lp-tiktok" className="px-7 py-3 rounded-full font-bold text-white shadow-lg bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 hover:from-indigo-600 hover:to-pink-600 transition-all duration-200 border-2 border-white/30 backdrop-blur-md ring-2 ring-pink-200/30">ログイン</Link>
-                          </div>
                           </div>
                         </>
                       )}
